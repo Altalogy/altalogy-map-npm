@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import { Map, TileLayer } from 'react-leaflet'
 import MapMarker from './components/MapMarker'
+import MapDraw from './components/MapDraw'
+import CustomMapDraw from './components/CustomMapDraw'
 import './App.scss'
 
 const DEFAULT_VIEWPORT = {
   center: [50.270908, 19.039993],
   zoom: 13,
 }
-
 
 export class App extends Component {
   constructor(props) {
@@ -17,7 +17,15 @@ export class App extends Component {
     this.state = {
       viewport: DEFAULT_VIEWPORT,
       markers: [],
+      draw: {
+        active: false,
+        position: 'topright',
+        options: {}
+      }
     }
+  }
+
+  componentDidMount() {
   }
 
   setViewport(lat,lng,zoom) {
@@ -29,6 +37,29 @@ export class App extends Component {
         }
       })
     }
+  }
+
+  setDraw(pos,option) {
+    let position = null
+    let options = null
+    if(pos === 'topleft' || pos === 'topright' ||
+    pos === 'bottomleft' || pos === 'bottomright') {
+      position = pos
+    }
+    if(option === 'polyline' || option === 'polygon' ||
+    option === 'rectangle' || option === 'circle' ||
+    option === 'marker' || option === 'circlemarker') {
+      options = { [option] : false }
+    } else if (option) {
+      options = option
+    }
+    this.setState({
+      draw: {
+        active: pos || option ? true : false,
+        position: position ? position : 'topright',
+        options: option ? options : {}
+      }
+    })
   }
 
   addMarkers(lat,lng,text) {
@@ -47,16 +78,19 @@ export class App extends Component {
   }
 
   render() {
-    const { viewport, markers } = this.state
+    const { viewport, markers, draw } = this.state
     return (
       <div className="App">
-        <Map viewport={viewport} style={{ width:'100vw', height: '100vh' }}>
+        <Map ref='map' viewport={viewport} style={{ width:'100vw', height: '100vh' }}>
           <TileLayer
             url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           />
           <MapMarker
             markers={markers}
+          />
+          <MapDraw
+            draw={draw}
           />
         </Map>
       </div>
