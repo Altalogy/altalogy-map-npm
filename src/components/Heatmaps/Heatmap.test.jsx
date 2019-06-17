@@ -1,0 +1,9 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Heatmap from './Heatmap';
+
+it('renders without crashing', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(<Heatmap />, div);
+  ReactDOM.unmountComponentAtNode(div);
+});
