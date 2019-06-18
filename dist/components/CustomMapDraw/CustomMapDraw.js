@@ -9,10 +9,12 @@ class CustomMapDraw extends React.Component {
       customDrawSettings,
       customDraw
     } = this.props;
-    return React.createElement(FeatureGroup, null, React.createElement(EditControl, {
+    return React.createElement("div", {
+      className: "custom__map"
+    }, React.createElement(FeatureGroup, null, React.createElement(EditControl, {
       ref: el => customDraw(el),
       draw: customDrawSettings
-    }));
+    })));
   }
 
 }

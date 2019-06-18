@@ -5,7 +5,7 @@ import MapMarker from './components/MapMarker';
 import MapDraw from './components/MapDraw';
 import CustomMapDraw from './components/CustomMapDraw';
 import Heatmap from './components/Heatmaps';
-import './App.scss';
+import './AltaMap.scss';
 const DEFAULT_VIEWPORT = {
   center: [50.270908, 19.039993],
   zoom: 13
@@ -24,7 +24,7 @@ const DRAW_MENU_POSITION = {
   bottomright: 'bottomright',
   bottomleft: 'bottomleft'
 };
-export class App extends Component {
+export class AltaMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,7 +45,15 @@ export class App extends Component {
     window.react_map = {
       _customDrawRef: null
     };
+    this.setMaps = this.setMaps.bind(this);
+    this.activeHeatmap = this.activeHeatmap.bind(this);
+    this.setViewport = this.setViewport.bind(this);
+    this.setCustomDraw = this.setCustomDraw.bind(this);
+    this.setCustomDrawSettings = this.setCustomDrawSettings.bind(this);
+    this.addMarkers = this.addMarkers.bind(this);
     this.customDraw = this.customDraw.bind(this);
+    this.editCustomDraw = this.editCustomDraw.bind(this);
+    this.removeCustomDraw = this.removeCustomDraw.bind(this);
     this.getCustomDrawData = this.getCustomDrawData.bind(this);
   }
 
@@ -205,13 +213,12 @@ export class App extends Component {
       customDrawSettings
     } = this.state;
     return React.createElement("div", {
-      className: "App"
+      className: "AltaMap"
     }, React.createElement(Map, {
-      ref: 'map',
       viewport: viewport,
       style: {
-        width: '100vw',
-        height: '100vh'
+        width: '100%',
+        height: '100%'
       }
     }, React.createElement(TileLayer, {
       url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
@@ -229,4 +236,4 @@ export class App extends Component {
   }
 
 }
-export default App;
+export default AltaMap;

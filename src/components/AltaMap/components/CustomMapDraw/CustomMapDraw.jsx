@@ -7,12 +7,14 @@ class CustomMapDraw extends React.Component {
   render () {
     const {customDrawSettings, customDraw} = this.props
     return (
-      <FeatureGroup>
-        <EditControl
-          ref={el => customDraw(el)}
-          draw={customDrawSettings}
-        />
-      </FeatureGroup>
+      <div className='custom__map'>
+        <FeatureGroup>
+          <EditControl
+            ref={el => customDraw(el)}
+            draw={customDrawSettings}
+            />
+        </FeatureGroup>
+      </div>
     )
   }
 }
