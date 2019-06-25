@@ -45,6 +45,7 @@ export class AltaMap extends Component {
       remove: false,
       customDrawSettings: {},
       customDrawData: {},
+      customDrawing: false,
       heatmapStatus: false
     }
     window.react_map = { _customDrawRef: null }
@@ -98,15 +99,22 @@ export class AltaMap extends Component {
   }
 
   setCustomDraw(option) {
-    const { editable, remove } = this.state
+    const { editable, remove, customDrawing } = this.state
     if( editable ) {
       this.editCustomDraw()
     } else if ( remove ) {
       this.removeCustomDraw()
     }
     if(_.hasIn(DRAW_OPTION,option)) {
-      window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[option].handler.enable()
+      if(customDrawing === false) {
+        window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[option].handler.enable()
+      } else {
+        window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[option].handler.disable()
+      }
     }
+    this.setState({
+      customDrawing: !customDrawing
+    })
     this.getCustomDrawData()
   }
 

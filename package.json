@@ -1,6 +1,6 @@
 {
-  "name": "altalogy-map-npm",
-  "version": "0.1.4",
+  "name": "altalogy-map",
+  "version": "0.0.1",
   "private": false,
   "dependencies": {
     "enzyme": "^3.10.0",
@@ -55,7 +55,7 @@
     "type": "git",
     "url": "git+https://github.com/Altalogy/altalogy-map-npm.git"
   },
-  "author": "altalogy",
+  "author": "Arkadiusz",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Altalogy/altalogy-map-npm/issues"
