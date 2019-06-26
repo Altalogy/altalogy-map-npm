@@ -36,36 +36,30 @@ export class AltaMap extends Component {
         position: 'topright',
         options: {}
       },
+      customDrawing: '',
       editable: false,
       remove: false,
       customDrawSettings: {},
-      customDrawData: {},
-      heatmapStatus: false
+      customDrawData: {}
     };
     window.react_map = {
       _customDrawRef: null
     };
     this.setMaps = this.setMaps.bind(this);
-    this.activeHeatmap = this.activeHeatmap.bind(this);
     this.setViewport = this.setViewport.bind(this);
     this.setCustomDraw = this.setCustomDraw.bind(this);
     this.setCustomDrawSettings = this.setCustomDrawSettings.bind(this);
-    this.addMarkers = this.addMarkers.bind(this);
+    this.addMarker = this.addMarker.bind(this);
     this.customDraw = this.customDraw.bind(this);
     this.editCustomDraw = this.editCustomDraw.bind(this);
     this.removeCustomDraw = this.removeCustomDraw.bind(this);
     this.getCustomDrawData = this.getCustomDrawData.bind(this);
+    this.cancelCustomDraw = this.cancelCustomDraw.bind(this);
   }
 
   setMaps(maps) {
     this.setState({
       maps: maps
-    });
-  }
-
-  activeHeatmap() {
-    this.setState({
-      heatmapStatus: !this.state.heatmapStatus
     });
   }
 
@@ -95,7 +89,8 @@ export class AltaMap extends Component {
   setCustomDraw(option) {
     const {
       editable,
-      remove
+      remove,
+      customDrawing
     } = this.state;
 
     if (editable) {
@@ -106,9 +101,27 @@ export class AltaMap extends Component {
 
     if (_.hasIn(DRAW_OPTION, option)) {
       window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[option].handler.enable();
+
+      this.setState({
+        customDrawing: option
+      });
     }
 
     this.getCustomDrawData();
+  }
+
+  cancelCustomDraw() {
+    const {
+      customDrawing
+    } = this.state;
+
+    if (_.hasIn(DRAW_OPTION, customDrawing)) {
+      window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[customDrawing].handler.disable();
+
+      this.setState({
+        customDrawing: ''
+      });
+    }
   }
 
   editCustomDraw() {
@@ -176,7 +189,7 @@ export class AltaMap extends Component {
     }
   }
 
-  addMarkers(lat, lng, text) {
+  addMarker(lat, lng, text) {
     if (lat && lng) {
       const marker = {
         position: [lat, lng],
@@ -188,20 +201,29 @@ export class AltaMap extends Component {
     }
   }
 
-  getHeatmap() {
+  getMaps() {
     const {
-      heatmapStatus,
-      maps
+      maps,
+      markers
     } = this.state;
 
-    if (heatmapStatus && maps.length > 0) {
-      return maps.map((mapObject, idx) => mapObject.type === 'heatmap' && React.createElement("div", {
-        className: "heatmaps",
-        key: idx,
-        id: idx
-      }, React.createElement(Heatmap, {
-        heatmap: mapObject
-      })));
+    if (maps.length > 0) {
+      return maps.map((mapObject, idx) => {
+        if (mapObject.type === 'heatmap') {
+          return React.createElement("div", {
+            className: "heatmaps",
+            key: idx,
+            id: idx
+          }, React.createElement(Heatmap, {
+            heatmap: mapObject
+          }));
+        } else if (mapObject.type === 'markers') {
+          mapObject.data.map(marker => markers.push({
+            position: [marker.lat, marker.lng],
+            text: marker.popup
+          }));
+        }
+      });
     }
   }
 
@@ -223,8 +245,6 @@ export class AltaMap extends Component {
     }, React.createElement(TileLayer, {
       url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
       attribution: "\xA9 <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
-    }), React.createElement(MapMarker, {
-      markers: markers
     }), React.createElement(MapDraw, {
       draw: draw
     }), React.createElement(CustomMapDraw, {
@@ -232,7 +252,9 @@ export class AltaMap extends Component {
       customDraw: this.customDraw,
       getCustomDrawData: this.getCustomDrawData,
       customDrawSettings: customDrawSettings
-    }), this.getHeatmap()));
+    }), React.createElement(MapMarker, {
+      markers: markers
+    }), this.getMaps()));
   }
 
 }
