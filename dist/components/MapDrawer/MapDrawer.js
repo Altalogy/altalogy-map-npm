@@ -1,22 +1,23 @@
 import React from 'react';
 import { EditControl } from 'react-leaflet-draw';
 import { FeatureGroup } from 'react-leaflet';
-import './CustomMapDraw.scss';
+import './MapDrawer.scss';
 
-class CustomMapDraw extends React.Component {
+class MapDrawer extends React.Component {
   render() {
     const {
-      customDrawSettings,
-      customDraw
+      mapDrawerSettings,
+      mapDrawer
     } = this.props;
     return React.createElement("div", {
       className: "custom__map"
     }, React.createElement(FeatureGroup, null, React.createElement(EditControl, {
-      ref: el => customDraw(el),
-      draw: customDrawSettings
+      position: "topleft",
+      ref: el => mapDrawer(el),
+      draw: mapDrawerSettings
     })));
   }
 
 }
 
-export default CustomMapDraw;
+export default MapDrawer;

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Map, TileLayer } from 'react-leaflet';
 import _ from 'lodash';
-import MapMarker from './components/MapMarker';
-import MapDraw from './components/MapDraw';
-import CustomMapDraw from './components/CustomMapDraw';
-import Heatmap from './components/Heatmaps';
+import uuid from 'uuidv4';
+import MapElements from './components/MapElements';
+import MapLeafletDrawer from './components/MapLeafletDrawer';
+import MapDrawer from './components/MapDrawer';
 import './AltaMap.scss';
 const DEFAULT_VIEWPORT = {
   center: [50.270908, 19.039993],
@@ -24,40 +24,41 @@ const DRAW_MENU_POSITION = {
   bottomright: 'bottomright',
   bottomleft: 'bottomleft'
 };
-export class AltaMap extends Component {
+
+class AltaMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
       maps: [],
       viewport: DEFAULT_VIEWPORT,
       markers: [],
-      draw: {
+      mapLeafletDrawer: {
         active: false,
         position: 'topright',
         options: {}
       },
-      customDrawing: '',
+      mapDrawer: '',
       editable: false,
-      remove: false,
-      customDrawSettings: {},
-      customDrawData: {}
+      removable: false,
+      mapDrawerSettings: {},
+      mapDrawerData: {}
     };
     window.react_map = {
-      _customDrawRef: null
+      _mapDrawerRef: null
     };
-    this.setMaps = this.setMaps.bind(this);
+    this.addElements = this.addElements.bind(this);
     this.setViewport = this.setViewport.bind(this);
-    this.setCustomDraw = this.setCustomDraw.bind(this);
-    this.setCustomDrawSettings = this.setCustomDrawSettings.bind(this);
+    this.setMapDrawer = this.setMapDrawer.bind(this);
+    this.setMapDrawerSettings = this.setMapDrawerSettings.bind(this);
     this.addMarker = this.addMarker.bind(this);
-    this.customDraw = this.customDraw.bind(this);
-    this.editCustomDraw = this.editCustomDraw.bind(this);
-    this.removeCustomDraw = this.removeCustomDraw.bind(this);
-    this.getCustomDrawData = this.getCustomDrawData.bind(this);
-    this.cancelCustomDraw = this.cancelCustomDraw.bind(this);
+    this.mapDrawer = this.mapDrawer.bind(this);
+    this.editMapDrawer = this.editMapDrawer.bind(this);
+    this.removeMapDrawer = this.removeMapDrawer.bind(this);
+    this.getMapDrawerData = this.getMapDrawerData.bind(this);
+    this.cancelMapDrawer = this.cancelMapDrawer.bind(this);
   }
 
-  setMaps(maps) {
+  addElements(maps) {
     this.setState({
       maps: maps
     });
@@ -74,89 +75,89 @@ export class AltaMap extends Component {
     }
   }
 
-  customDraw(x) {
-    window.react_map._customDrawRef = x;
+  mapDrawer(x) {
+    window.react_map._mapDrawerRef = x;
   }
 
-  getCustomDrawData() {
+  getMapDrawerData() {
     this.setState({
-      customDrawData: window.react_map._customDrawRef.leafletElement.options.edit.featureGroup._layers
+      mapDrawerData: window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers
     }, () => {
-      return this.state.customDrawData;
+      return this.state.mapDrawerData;
     });
   }
 
-  setCustomDraw(option) {
+  setMapDrawer(option) {
     const {
       editable,
-      remove,
-      customDrawing
+      removable,
+      mapDrawer
     } = this.state;
 
     if (editable) {
-      this.editCustomDraw();
-    } else if (remove) {
-      this.removeCustomDraw();
+      this.editMapDrawer();
+    } else if (removable) {
+      this.removeMapDrawer();
     }
 
     if (_.hasIn(DRAW_OPTION, option)) {
-      window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[option].handler.enable();
+      window.react_map._mapDrawerRef.leafletElement._toolbars.draw._modes[option].handler.enable();
 
       this.setState({
-        customDrawing: option
+        mapDrawer: option
       });
     }
 
-    this.getCustomDrawData();
+    this.getMapDrawerData();
   }
 
-  cancelCustomDraw() {
+  cancelMapDrawer() {
     const {
-      customDrawing
+      mapDrawer
     } = this.state;
 
-    if (_.hasIn(DRAW_OPTION, customDrawing)) {
-      window.react_map._customDrawRef.leafletElement._toolbars.draw._modes[customDrawing].handler.disable();
+    if (_.hasIn(DRAW_OPTION, mapDrawer)) {
+      window.react_map._mapDrawerRef.leafletElement._toolbars.draw._modes[mapDrawer].handler.disable();
 
       this.setState({
-        customDrawing: ''
+        mapDrawer: ''
       });
     }
   }
 
-  editCustomDraw() {
-    if (window.react_map && window.react_map._customDrawRef && this.state.editable === false) {
+  editMapDrawer() {
+    if (window.react_map && window.react_map._mapDrawerRef && this.state.editable === false) {
       this.setState({
         editable: true
       });
 
-      window.react_map._customDrawRef.leafletElement._toolbars.edit._modes.edit.handler.enable();
+      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.edit.handler.enable();
     } else {
       this.setState({
         editable: false
       });
 
-      window.react_map._customDrawRef.leafletElement._toolbars.edit._modes.edit.handler.disable();
+      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.edit.handler.disable();
     }
   }
 
-  removeCustomDraw() {
-    if (window.react_map && window.react_map._customDrawRef && this.state.remove === false) {
+  removeMapDrawer() {
+    if (window.react_map && window.react_map._mapDrawerRef && this.state.remove === false) {
       this.setState({
         remove: true
       });
 
-      window.react_map._customDrawRef.leafletElement._toolbars.edit._modes.remove.handler.enable();
+      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.remove.handler.enable();
     } else {
       this.setState({
         remove: false
       });
 
-      window.react_map._customDrawRef.leafletElement._toolbars.edit._modes.remove.handler.disable();
+      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.remove.handler.disable();
     }
   }
 
-  setDraw(pos, option) {
+  setMapLeafletDrawer(pos, option) {
     let position = null;
     let options = null;
 
@@ -181,10 +182,10 @@ export class AltaMap extends Component {
     });
   }
 
-  setCustomDrawSettings(options) {
+  setMapDrawerSettings(options) {
     if (options) {
       this.setState({
-        customDrawSettings: options
+        mapDrawerSettings: options
       });
     }
   }
@@ -192,7 +193,11 @@ export class AltaMap extends Component {
   addMarker(lat, lng, text) {
     if (lat && lng) {
       const marker = {
-        position: [lat, lng],
+        id: uuid(),
+        position: {
+          lat,
+          lng
+        },
         text: text
       };
       this.setState({
@@ -201,42 +206,18 @@ export class AltaMap extends Component {
     }
   }
 
-  getMaps() {
-    const {
-      maps,
-      markers
-    } = this.state;
-
-    if (maps.length > 0) {
-      return maps.map((mapObject, idx) => {
-        if (mapObject.type === 'heatmap') {
-          return React.createElement("div", {
-            className: "heatmaps",
-            key: idx,
-            id: idx
-          }, React.createElement(Heatmap, {
-            heatmap: mapObject
-          }));
-        } else if (mapObject.type === 'markers') {
-          mapObject.data.map(marker => markers.push({
-            position: [marker.lat, marker.lng],
-            text: marker.popup
-          }));
-        }
-      });
-    }
-  }
-
   render() {
     const {
       viewport,
       markers,
-      draw,
-      customDrawSettings
+      mapLeafletDrawer,
+      mapDrawerSettings,
+      maps
     } = this.state;
     return React.createElement("div", {
       className: "AltaMap"
     }, React.createElement(Map, {
+      minZoom: "4",
       viewport: viewport,
       style: {
         width: '100%',
@@ -245,17 +226,18 @@ export class AltaMap extends Component {
     }, React.createElement(TileLayer, {
       url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
       attribution: "\xA9 <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
-    }), React.createElement(MapDraw, {
-      draw: draw
-    }), React.createElement(CustomMapDraw, {
-      finderAreaDrawElement: this.finderAreaDrawElement,
-      customDraw: this.customDraw,
-      getCustomDrawData: this.getCustomDrawData,
-      customDrawSettings: customDrawSettings
-    }), React.createElement(MapMarker, {
-      markers: markers
-    }), this.getMaps()));
+    }), React.createElement(MapLeafletDrawer, {
+      mapLeafletDrawer: mapLeafletDrawer
+    }), React.createElement(MapDrawer, {
+      mapDrawer: this.mapDrawer,
+      getMapDrawerData: this.getMapDrawerData,
+      mapDrawerSettings: mapDrawerSettings
+    }), React.createElement(MapElements, {
+      markers: markers,
+      maps: maps
+    })));
   }
 
 }
+
 export default AltaMap;

@@ -9,7 +9,7 @@ const MapMarker = (props) => {
         markers.map((marker) => (
           <div>
           { marker && marker.position &&
-            <Marker position={marker.position}>
+            <Marker id={marker.id} position={marker.position}>
               { marker.text &&
                 <Popup>
                   {marker.text}

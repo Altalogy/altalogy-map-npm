@@ -6,6 +6,7 @@ const MapMarker = props => {
     markers
   } = props;
   return React.createElement("div", null, markers && markers.length > 0 && markers.map(marker => React.createElement("div", null, marker && marker.position && React.createElement(Marker, {
+    id: marker.id,
     position: marker.position
   }, marker.text && React.createElement(Popup, null, marker.text)))));
 };
