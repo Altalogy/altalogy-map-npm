@@ -1,0 +1,18 @@
+.drawer__control {
+  width: auto;
+  max-width: 100%;
+  button {
+    border-radius: 20px;
+    margin: 0 5px;
+    border: 1px solid;
+    background: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    outline: none;
+    &:hover,:active,:focus {
+      background: #2F53F7;
+      border:1px solid #2F53F7;
+      color: white;
+    }
+  }
+}

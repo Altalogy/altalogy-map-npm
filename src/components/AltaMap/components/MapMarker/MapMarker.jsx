@@ -2,25 +2,15 @@ import React from 'react'
 import { Marker, Popup } from 'react-leaflet'
 
 const MapMarker = (props) => {
-  const { markers } = props
+  const { marker } = props
   return (
-    <div>
-      { markers && markers.length > 0 &&
-        markers.map((marker) => (
-          <div>
-          { marker && marker.position &&
-            <Marker id={marker.id} position={marker.position}>
-              { marker.text &&
-                <Popup>
-                  {marker.text}
-                </Popup>
-              }
-            </Marker>
-          }
-          </div>
-        ))
+    <Marker id={marker.id} position={marker.position}>
+      { marker.popup &&
+        <Popup>
+          {marker.popup}
+        </Popup>
       }
-    </div>
+    </Marker>
   )
 }
 

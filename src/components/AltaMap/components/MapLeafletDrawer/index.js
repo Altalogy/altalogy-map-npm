@@ -1,3 +1,3 @@
-import MapLeafletDraw from './MapLeafletDraw'
+import MapLeafletDrawer from './MapLeafletDrawer'
 
-export default MapLeafletDraw
+export default MapLeafletDrawer

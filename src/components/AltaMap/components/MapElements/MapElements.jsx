@@ -1,53 +1,61 @@
 import React, { Component } from 'react'
+import uuid from 'uuidv4'
 import Heatmap from '../Heatmaps'
 import MapMarker from '../MapMarker'
-import uuid from 'uuidv4'
 
 class MapElements extends Component {
-  constructor(props) {
-    super(props)
-  }
 
   getMapElements() {
-    const { maps, markers } = this.props
-    if( maps.length > 0 ) {
+    const { elements } = this.props
+    if( elements.length > 0 ) {
       return(
-        maps.map((mapObject, idx) => {
-          if(mapObject.type === 'heatmap') {
-            return (
-              <div className='heatmaps' key={idx} id={idx}>
-                <Heatmap
-                  heatmap={mapObject}
-                />
-              </div>
-            )
-          } else if(mapObject.type === 'group_markers') {
-            mapObject.data.map((marker) => (
-              markers.push({
-                id: uuid(),
-                position: {lat:marker.lat,lng:marker.lng},
-                text: marker.popup
-              })
-            ))
-          } else if(mapObject.type === 'marker') {
-            markers.push({
-              id: uuid(),
-              position: {lat:mapObject.data[0].lat,lng:mapObject.data[0].lng},
-              text: mapObject.data[0].popup
-            })
+        elements.map((mapObject, idx) => {
+          if(!mapObject.hidden) {
+            if(mapObject.type === 'heatmap') {
+              return (
+                <div className='heatmap__element' key={uuid()}>
+                  <Heatmap
+                    heatmap={mapObject}
+                    />
+                </div>
+              )
+            } else if(mapObject.type === 'group_markers') {
+              return (
+                mapObject.data.map((data) => (
+                  <div className='marker__element' key={uuid()}>
+                    <MapMarker
+                      marker={{
+                        id: mapObject.id,
+                        position: {lat:data.lat,lng:data.lng},
+                        popup: data && data.popup ? data.popup : '',
+                      }}
+                      />
+                  </div>
+                ))
+              )
+            } else if(mapObject.type === 'marker') {
+              return (
+                <div className='marker__element' key={uuid()}>
+                  <MapMarker
+                    marker={{
+                      id: mapObject.id,
+                      position: {lat:mapObject.data.lat,lng:mapObject.data.lng},
+                      popup: mapObject.options && mapObject.options.popup ? mapObject.options.popup : '',
+                    }}
+                    />
+                </div>
+              )
+            }
           }
+          return idx
         })
       )
     }
   }
 
   render() {
-    const { markers } = this.props
     return (
       <div>
-        <MapMarker
-          markers={markers}
-        />
         { this.getMapElements() }
       </div>
     )
