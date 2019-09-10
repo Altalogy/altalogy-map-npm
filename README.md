@@ -26,7 +26,12 @@ Script builds application to the `build` folder and then moves entire folder to 
 
 ## Build & publish NPM
 
+```
+$ yarn publish:npm
+$ npm login
+$ npm publish
 
+```
 
 ## Available Scripts
 

@@ -1,59 +1,62 @@
 import React, { Component } from 'react';
+import uuid from 'uuidv4';
 import Heatmap from '../Heatmaps';
 import MapMarker from '../MapMarker';
-import uuid from 'uuidv4';
 
 class MapElements extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   getMapElements() {
     const {
-      maps,
-      markers
+      elements
     } = this.props;
 
-    if (maps.length > 0) {
-      return maps.map((mapObject, idx) => {
-        if (mapObject.type === 'heatmap') {
-          return React.createElement("div", {
-            className: "heatmaps",
-            key: idx,
-            id: idx
-          }, React.createElement(Heatmap, {
-            heatmap: mapObject
-          }));
-        } else if (mapObject.type === 'group_markers') {
-          mapObject.data.map(marker => markers.push({
-            id: uuid(),
-            position: {
-              lat: marker.lat,
-              lng: marker.lng
-            },
-            text: marker.popup
-          }));
-        } else if (mapObject.type === 'marker') {
-          markers.push({
-            id: uuid(),
-            position: {
-              lat: mapObject.data[0].lat,
-              lng: mapObject.data[0].lng
-            },
-            text: mapObject.data[0].popup
-          });
+    if (elements.length > 0) {
+      return elements.map((mapObject, idx) => {
+        if (!mapObject.hidden) {
+          if (mapObject.type === 'heatmap') {
+            return React.createElement("div", {
+              className: "heatmap__element",
+              key: uuid()
+            }, React.createElement(Heatmap, {
+              heatmap: mapObject
+            }));
+          } else if (mapObject.type === 'group_markers') {
+            return mapObject.data.map(data => React.createElement("div", {
+              className: "marker__element",
+              key: uuid()
+            }, React.createElement(MapMarker, {
+              marker: {
+                id: mapObject.id,
+                position: {
+                  lat: data.lat,
+                  lng: data.lng
+                },
+                popup: data && data.popup ? data.popup : ''
+              }
+            })));
+          } else if (mapObject.type === 'marker') {
+            return React.createElement("div", {
+              className: "marker__element",
+              key: uuid()
+            }, React.createElement(MapMarker, {
+              marker: {
+                id: mapObject.id,
+                position: {
+                  lat: mapObject.data.lat,
+                  lng: mapObject.data.lng
+                },
+                popup: mapObject.options && mapObject.options.popup ? mapObject.options.popup : ''
+              }
+            }));
+          }
         }
+
+        return idx;
       });
     }
   }
 
   render() {
-    const {
-      markers
-    } = this.props;
-    return React.createElement("div", null, React.createElement(MapMarker, {
-      markers: markers
-    }), this.getMapElements());
+    return React.createElement("div", null, this.getMapElements());
   }
 
 }

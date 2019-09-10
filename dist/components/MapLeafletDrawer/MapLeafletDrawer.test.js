@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MapLeafletDraw from './MapLeafletDraw';
+import MapLeafletDrawer from './MapLeafletDrawer';
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(React.createElement(MapLeafletDraw, null), div);
+  ReactDOM.render(React.createElement(MapLeafletDrawer, null), div);
   ReactDOM.unmountComponentAtNode(div);
 });

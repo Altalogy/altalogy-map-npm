@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Map, TileLayer } from 'react-leaflet';
-import _ from 'lodash';
 import uuid from 'uuidv4';
+import MapElement from './models/MapElement';
 import MapElements from './components/MapElements';
 import MapLeafletDrawer from './components/MapLeafletDrawer';
 import MapDrawer from './components/MapDrawer';
@@ -10,58 +10,20 @@ const DEFAULT_VIEWPORT = {
   center: [50.270908, 19.039993],
   zoom: 13
 };
-const DRAW_OPTION = {
-  rectangle: 'rectangle',
-  polyline: 'polyline',
-  circle: 'circle',
-  circlemarker: 'circlemarker',
-  marker: 'marker',
-  polygon: 'polygon'
-};
-const DRAW_MENU_POSITION = {
-  topleft: 'topleft',
-  topright: 'topright',
-  bottomright: 'bottomright',
-  bottomleft: 'bottomleft'
-};
 
 class AltaMap extends Component {
   constructor(props) {
     super(props);
+    this.drawRef = React.createRef();
+    this.leafletDrawer = React.createRef();
     this.state = {
-      maps: [],
-      viewport: DEFAULT_VIEWPORT,
-      markers: [],
-      mapLeafletDrawer: {
-        active: false,
-        position: 'topright',
-        options: {}
-      },
-      mapDrawer: '',
-      editable: false,
-      removable: false,
-      mapDrawerSettings: {},
-      mapDrawerData: {}
-    };
-    window.react_map = {
-      _mapDrawerRef: null
+      elements: [],
+      viewport: DEFAULT_VIEWPORT
     };
     this.addElements = this.addElements.bind(this);
     this.setViewport = this.setViewport.bind(this);
-    this.setMapDrawer = this.setMapDrawer.bind(this);
-    this.setMapDrawerSettings = this.setMapDrawerSettings.bind(this);
     this.addMarker = this.addMarker.bind(this);
-    this.mapDrawer = this.mapDrawer.bind(this);
-    this.editMapDrawer = this.editMapDrawer.bind(this);
-    this.removeMapDrawer = this.removeMapDrawer.bind(this);
-    this.getMapDrawerData = this.getMapDrawerData.bind(this);
-    this.cancelMapDrawer = this.cancelMapDrawer.bind(this);
-  }
-
-  addElements(maps) {
-    this.setState({
-      maps: maps
-    });
+    this.getElements = this.getElements.bind(this);
   }
 
   setViewport(lat, lng, zoom) {
@@ -75,148 +37,175 @@ class AltaMap extends Component {
     }
   }
 
-  mapDrawer(x) {
-    window.react_map._mapDrawerRef = x;
-  }
-
-  getMapDrawerData() {
-    this.setState({
-      mapDrawerData: window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers
-    }, () => {
-      return this.state.mapDrawerData;
+  addElements(elements) {
+    let mapElement;
+    let elementsArray = this.state.elements;
+    elements.map(me => {
+      mapElement = new MapElement(me);
+      elementsArray = elementsArray.concat(mapElement);
+      return elementsArray;
     });
-  }
-
-  setMapDrawer(option) {
-    const {
-      editable,
-      removable,
-      mapDrawer
-    } = this.state;
-
-    if (editable) {
-      this.editMapDrawer();
-    } else if (removable) {
-      this.removeMapDrawer();
-    }
-
-    if (_.hasIn(DRAW_OPTION, option)) {
-      window.react_map._mapDrawerRef.leafletElement._toolbars.draw._modes[option].handler.enable();
-
-      this.setState({
-        mapDrawer: option
-      });
-    }
-
-    this.getMapDrawerData();
-  }
-
-  cancelMapDrawer() {
-    const {
-      mapDrawer
-    } = this.state;
-
-    if (_.hasIn(DRAW_OPTION, mapDrawer)) {
-      window.react_map._mapDrawerRef.leafletElement._toolbars.draw._modes[mapDrawer].handler.disable();
-
-      this.setState({
-        mapDrawer: ''
-      });
-    }
-  }
-
-  editMapDrawer() {
-    if (window.react_map && window.react_map._mapDrawerRef && this.state.editable === false) {
-      this.setState({
-        editable: true
-      });
-
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.edit.handler.enable();
-    } else {
-      this.setState({
-        editable: false
-      });
-
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.edit.handler.disable();
-    }
-  }
-
-  removeMapDrawer() {
-    if (window.react_map && window.react_map._mapDrawerRef && this.state.remove === false) {
-      this.setState({
-        remove: true
-      });
-
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.remove.handler.enable();
-    } else {
-      this.setState({
-        remove: false
-      });
-
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.remove.handler.disable();
-    }
-  }
-
-  setMapLeafletDrawer(pos, option) {
-    let position = null;
-    let options = null;
-
-    if (_.hasIn(DRAW_MENU_POSITION, pos)) {
-      position = pos;
-    }
-
-    if (_.hasIn(DRAW_OPTION, option)) {
-      options = {
-        [option]: false
-      };
-    } else if (option) {
-      options = option;
-    }
-
     this.setState({
-      draw: {
-        active: pos || option ? true : false,
-        position: position ? position : 'topright',
-        options: option ? options : {}
+      elements: elementsArray
+    }, () => {
+      if (this.props.updateAltaMapState) {
+        this.props.updateAltaMapState();
       }
     });
   }
 
-  setMapDrawerSettings(options) {
-    if (options) {
+  deleteElement(tag) {
+    let deleteItem;
+    let elementsArray = this.state.elements;
+
+    if (elementsArray.length > 0) {
+      elementsArray.map(elements => {
+        if (elements.tags && elements.tags.indexOf(tag) > -1) {
+          deleteItem = elementsArray.indexOf(elements);
+          elementsArray.splice(deleteItem, 1);
+        }
+
+        return elementsArray;
+      });
+    }
+
+    this.setState({
+      elements: elementsArray
+    }, () => {
+      if (this.props.updateAltaMapState) {
+        this.props.updateAltaMapState();
+      }
+    });
+  }
+
+  deleteElementById(id) {
+    let deleteItem;
+    let elementsArray = this.state.elements;
+
+    if (elementsArray.length > 0) {
+      elementsArray.map(elements => {
+        if (elements.id === id) {
+          deleteItem = elementsArray.indexOf(elements);
+          elementsArray.splice(deleteItem, 1);
+        }
+
+        return elementsArray;
+      });
+    }
+
+    this.setState({
+      elements: elementsArray
+    }, () => {
+      if (this.props.updateAltaMapState) {
+        this.props.updateAltaMapState();
+      }
+    });
+  }
+
+  hideElement(tag) {
+    let elementsArray = this.state.elements;
+
+    if (elementsArray.length > 0) {
+      elementsArray.map(elements => {
+        if (elements.tags && elements.tags.indexOf(tag) > -1) {
+          elements.hidden = elements.hidden ? false : true;
+        }
+
+        return elementsArray;
+      });
       this.setState({
-        mapDrawerSettings: options
+        elements: elementsArray
+      }, () => {
+        if (this.props.updateAltaMapState) {
+          this.props.updateAltaMapState();
+        }
       });
     }
   }
 
-  addMarker(lat, lng, text) {
+  hideElementById(id) {
+    let elementsArray = this.state.elements;
+
+    if (elementsArray.length > 0) {
+      elementsArray.map(elements => {
+        if (elements.id === id) {
+          elements.hidden = elements.hidden ? false : true;
+        }
+
+        return elementsArray;
+      });
+      this.setState({
+        elements: elementsArray
+      }, () => {
+        if (this.props.updateAltaMapState) {
+          this.props.updateAltaMapState();
+        }
+      });
+    }
+  }
+
+  getElements() {
+    return this.state.elements;
+  }
+
+  getElementsById(id) {
+    let element;
+    let elementsArray = this.state.elements;
+
+    if (elementsArray.length > 0) {
+      elementsArray.map(elements => {
+        if (elements.id === id) {
+          element = elements;
+        }
+
+        return element;
+      });
+    }
+
+    return element;
+  }
+
+  getElementsByTag(tag) {
+    let element;
+    let elementsArray = this.state.elements;
+
+    if (elementsArray.length > 0) {
+      elementsArray.map(elements => {
+        if (elements.tags && elements.tags.indexOf(tag) > -1) {
+          element = elements;
+        }
+
+        return element;
+      });
+    }
+
+    return element;
+  }
+
+  addMarker(lat, lng, popup) {
     if (lat && lng) {
-      const marker = {
+      const marker = [{
         id: uuid(),
-        position: {
+        type: 'marker',
+        tags: null,
+        options: {
+          popup
+        },
+        data: {
           lat,
           lng
-        },
-        text: text
-      };
-      this.setState({
-        markers: [...this.state.markers, marker]
-      });
+        }
+      }];
+      this.addElements(marker);
     }
   }
 
   render() {
     const {
       viewport,
-      markers,
-      mapLeafletDrawer,
-      mapDrawerSettings,
-      maps
+      elements
     } = this.state;
-    return React.createElement("div", {
-      className: "AltaMap"
-    }, React.createElement(Map, {
+    return React.createElement(Map, {
       minZoom: "4",
       viewport: viewport,
       style: {
@@ -224,18 +213,15 @@ class AltaMap extends Component {
         height: '100%'
       }
     }, React.createElement(TileLayer, {
-      url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+      url: this.props.tileLayer ? this.props.tileLayer : 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: "\xA9 <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
     }), React.createElement(MapLeafletDrawer, {
-      mapLeafletDrawer: mapLeafletDrawer
+      ref: this.leafletDrawer
     }), React.createElement(MapDrawer, {
-      mapDrawer: this.mapDrawer,
-      getMapDrawerData: this.getMapDrawerData,
-      mapDrawerSettings: mapDrawerSettings
+      ref: this.drawRef
     }), React.createElement(MapElements, {
-      markers: markers,
-      maps: maps
-    })));
+      elements: elements
+    }));
   }
 
 }

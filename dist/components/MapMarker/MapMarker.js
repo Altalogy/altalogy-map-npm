@@ -3,12 +3,12 @@ import { Marker, Popup } from 'react-leaflet';
 
 const MapMarker = props => {
   const {
-    markers
+    marker
   } = props;
-  return React.createElement("div", null, markers && markers.length > 0 && markers.map(marker => React.createElement("div", null, marker && marker.position && React.createElement(Marker, {
+  return React.createElement(Marker, {
     id: marker.id,
     position: marker.position
-  }, marker.text && React.createElement(Popup, null, marker.text)))));
+  }, marker.popup && React.createElement(Popup, null, marker.popup));
 };
 
 export default MapMarker;

@@ -1,2 +1,2 @@
-import MapLeafletDraw from './MapLeafletDraw';
-export default MapLeafletDraw;
+import MapLeafletDrawer from './MapLeafletDrawer';
+export default MapLeafletDrawer;

@@ -1,8 +1,9 @@
 {
-  "name": "altalogy-map",
+  "name": "altalogy-map-npm",
   "version": "1.0.1",
   "private": false,
   "dependencies": {
+    "commander": "^3.0.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest-enzyme": "^7.0.2",
