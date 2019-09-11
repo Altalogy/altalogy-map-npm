@@ -1,19 +1,26 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
 
-class DeleteData extends Component {
+class HideElements extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
       selectedOption: null,
+      hide: false,
       options: []
+    }
+  }
+
+  componentDidMount() {
+    if(this.props.elements){
+      this.setHideOption(this.props.elements)
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.elements){
-      this.setDeleteOption(nextProps.elements)
+      this.setHideOption(nextProps.elements)
     }
   }
 
@@ -21,7 +28,7 @@ class DeleteData extends Component {
     this.setState({ selectedOption })
   }
 
-  setDeleteOption(elements) {
+  setHideOption(elements) {
     let options = []
     elements.map((element) => {
       options.push({ value: element.id, label: element.id })
@@ -32,23 +39,18 @@ class DeleteData extends Component {
     })
   }
 
-  confirmDeleteElement() {
-    const { selectedOption, options } = this.state
-    this.props.altaRef.deleteElementById(selectedOption.value)
-    let newOptions = options
-    let index = newOptions.indexOf(selectedOption.value)
-    newOptions.splice(index,1)
+  confirmHideElement() {
+    this.props.altaRef.hideElementById(this.state.selectedOption.value)
     this.setState({
-      selectedOption: null,
-      options: newOptions
+      hide: !this.state.hide
     })
   }
 
   render() {
-    const { options, selectedOption } = this.state
+    const { selectedOption, options } = this.state
     return (
-      <div className='delete__data'>
-        <h2>Delete Element</h2>
+      <div className='hide__elements'>
+        <h2>Hide Element</h2>
         <Select
           className='select'
           classNamePrefix='select'
@@ -57,7 +59,7 @@ class DeleteData extends Component {
           options={options}
         />
         { selectedOption && selectedOption.value ?
-          <button  className='btn btn--primary' onClick={() => {this.confirmDeleteElement()}}>Submit</button> :
+          <button  className='btn btn--primary' onClick={() => {this.confirmHideElement()}}>Submit</button> :
           <button className='btn btn--disabled' disabled>Submit</button>
         }
       </div>
@@ -65,4 +67,4 @@ class DeleteData extends Component {
   }
 }
 
-export default DeleteData
+export default HideElements

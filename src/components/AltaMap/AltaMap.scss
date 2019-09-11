@@ -9,29 +9,6 @@
   min-height: 50vh;
   display: flex;
   overflow-x: hidden;
-
-  .control-panel {
-    width: 0;
-    background: blue;
-    -webkit-transition: width 300ms; /* Safari prior 6.1 */
-    transition: width 300ms;
-    z-index: 400;
-
-    .control-panel__open_btn {
-      position: relative;
-      left: -150px;
-      top: 10px;
-      padding: 15px;
-      width: 100px;
-      background: green;
-    }
-  }
-
-  &.control-panel-active {
-    .control-panel {
-      width: 300px;
-    }
-  }
 }
 
 .sr-only {

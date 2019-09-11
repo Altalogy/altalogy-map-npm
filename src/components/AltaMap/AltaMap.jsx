@@ -30,6 +30,12 @@ class AltaMap extends Component {
     this.setViewport = this.setViewport.bind(this)
     this.addMarker = this.addMarker.bind(this)
     this.getElements = this.getElements.bind(this)
+    this.hideElement = this.hideElement.bind(this)
+    this.hideElementById = this.hideElementById.bind(this)
+    this.getElementsById = this.getElementsById.bind(this)
+    this.getElementsByTag = this.getElementsByTag.bind(this)
+    this.deleteElement = this.deleteElement.bind(this)
+    this.deleteElementById = this.deleteElementById.bind(this)
   }
 
   setViewport(lat,lng,zoom) {
@@ -191,6 +197,24 @@ class AltaMap extends Component {
   }
 
   render() {
+    const altaRef = {
+      current: {
+        addElements: this.addElements,
+        addMarker: this.addMarker,
+        drawRef: this.drawRef,
+        getElements: this.getElements,
+        state: this.state,
+        leafletDrawer: this.leafletDrawer,
+        setViewport: this.setViewport,
+        props: this.props,
+        hideElement: this.hideElement,
+        hideElementById: this.hideElementById,
+        getElementsById: this.getElementsById,
+        getElementsByTag: this.getElementsByTag,
+        deleteElement: this.deleteElement,
+        deleteElementById: this.deleteElementById
+      }
+    }
     const { viewport, elements, showControlPanel } = this.state
     const { controlPanel } = this.props
     let mainClass = 'altalogy-map'
@@ -212,6 +236,7 @@ class AltaMap extends Component {
           enabled={controlPanel}
           toggleControlPanel={() => this.toggleControlPanel()}
           elements={elements}
+          altaRef={altaRef}
         />
       </div>
     )

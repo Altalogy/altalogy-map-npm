@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import './App.scss'
 import AltaMap from './components/AltaMap'
-import AddData from './components/AddData'
-import DrawerControl from './components/DrawerControl'
-import HideElements from './components/HideElements'
-import DeleteData from './components/DeleteData'
+import AddData from './components/AltaMap/components/AddData'
+import DrawerControl from './components/AltaMap/components/DrawerControl'
+import HideElements from './components/AltaMap/components/HideElements'
+import DeleteData from './components/AltaMap/components/DeleteData'
 
 // const ADDRESS_POINTS = [
 //   [-37.8839, null, "571"],
