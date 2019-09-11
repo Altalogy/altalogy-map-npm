@@ -5,6 +5,7 @@ import MapElement from './models/MapElement'
 import MapElements from './components/MapElements'
 import MapLeafletDrawer from './components/MapLeafletDrawer'
 import MapDrawer from './components/MapDrawer'
+import ControlPanel from './components/ControlPanel'
 import './AltaMap.scss'
 
 const DEFAULT_VIEWPORT = {
@@ -22,6 +23,7 @@ class AltaMap extends Component {
     this.state = {
       elements: [],
       viewport: DEFAULT_VIEWPORT,
+      showControlPanel: false,
     }
 
     this.addElements = this.addElements.bind(this)
@@ -183,20 +185,35 @@ class AltaMap extends Component {
     }
   }
 
+  toggleControlPanel() {
+    const { showControlPanel } = this.state
+    this.setState({ showControlPanel: !showControlPanel })
+  }
+
   render() {
-    const { viewport, elements } = this.state
+    const { viewport, elements, showControlPanel } = this.state
+    const { controlPanel } = this.props
+    let mainClass = 'altalogy-map'
+    if (showControlPanel) { mainClass = mainClass + ' control-panel-active'}
     return (
-      <Map minZoom='4' viewport={viewport} style={{ width:'100%', height: '100%' }}>
-        <TileLayer
-          url={this.props.tileLayer ? this.props.tileLayer : 'http://{s}.tile.osm.org/{z}/{x}/{y}.png'}
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <MapLeafletDrawer ref={this.leafletDrawer} />
-        <MapDrawer ref={this.drawRef} />
-        <MapElements
+      <div className={mainClass} style={{ width:'100%', height: '50vh' }}>
+        <Map minZoom='4' viewport={viewport} style={{ width:'100%', height: '100%' }}>
+          <TileLayer
+            url={this.props.tileLayer ? this.props.tileLayer : 'http://{s}.tile.osm.org/{z}/{x}/{y}.png'}
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <MapLeafletDrawer ref={this.leafletDrawer} />
+          <MapDrawer ref={this.drawRef} />
+          <MapElements
+            elements={elements}
+          />
+        </Map>
+        <ControlPanel
+          enabled={controlPanel}
+          toggleControlPanel={() => this.toggleControlPanel()}
           elements={elements}
         />
-      </Map>
+      </div>
     )
   }
 }
