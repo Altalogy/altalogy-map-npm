@@ -4,6 +4,13 @@
   text-align: center;
 }
 
+.altalogy-map {
+  width: 100vw;
+  min-height: 50vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
 .sr-only {
   display: none;
  }

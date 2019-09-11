@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/altalogy-map-npm/precache-manifest.4afde391f9e32ea37555bca21e2fe583.js"
+  "/altalogy-map-npm/precache-manifest.63049863615831fdb2b9696973a7065f.js"
 );
 
 self.addEventListener('message', (event) => {
