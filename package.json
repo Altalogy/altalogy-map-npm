@@ -1,6 +1,6 @@
 {
   "name": "altalogy-map-npm",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "dependencies": {
     "commander": "^3.0.1",
@@ -50,10 +50,19 @@
   "babel": {
     "presets": [
       "@babel/react"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.4"
+    "@babel/cli": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4"
   },
   "repository": {
     "type": "git",

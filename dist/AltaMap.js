@@ -5,6 +5,7 @@ import MapElement from './models/MapElement';
 import MapElements from './components/MapElements';
 import MapLeafletDrawer from './components/MapLeafletDrawer';
 import MapDrawer from './components/MapDrawer';
+import ControlPanel from './components/ControlPanel';
 import './AltaMap.scss';
 const DEFAULT_VIEWPORT = {
   center: [50.270908, 19.039993],
@@ -18,12 +19,19 @@ class AltaMap extends Component {
     this.leafletDrawer = React.createRef();
     this.state = {
       elements: [],
-      viewport: DEFAULT_VIEWPORT
+      viewport: DEFAULT_VIEWPORT,
+      showControlPanel: false
     };
     this.addElements = this.addElements.bind(this);
     this.setViewport = this.setViewport.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.getElements = this.getElements.bind(this);
+    this.hideElement = this.hideElement.bind(this);
+    this.hideElementById = this.hideElementById.bind(this);
+    this.getElementsById = this.getElementsById.bind(this);
+    this.getElementsByTag = this.getElementsByTag.bind(this);
+    this.deleteElement = this.deleteElement.bind(this);
+    this.deleteElementById = this.deleteElementById.bind(this);
   }
 
   setViewport(lat, lng, zoom) {
@@ -200,12 +208,55 @@ class AltaMap extends Component {
     }
   }
 
+  toggleControlPanel() {
+    const {
+      showControlPanel
+    } = this.state;
+    this.setState({
+      showControlPanel: !showControlPanel
+    });
+  }
+
   render() {
+    const altaRef = {
+      current: {
+        addElements: this.addElements,
+        addMarker: this.addMarker,
+        drawRef: this.drawRef,
+        getElements: this.getElements,
+        state: this.state,
+        leafletDrawer: this.leafletDrawer,
+        setViewport: this.setViewport,
+        props: this.props,
+        hideElement: this.hideElement,
+        hideElementById: this.hideElementById,
+        getElementsById: this.getElementsById,
+        getElementsByTag: this.getElementsByTag,
+        deleteElement: this.deleteElement,
+        deleteElementById: this.deleteElementById
+      }
+    };
     const {
       viewport,
-      elements
+      elements,
+      showControlPanel
     } = this.state;
-    return React.createElement(Map, {
+    const {
+      controlPanel
+    } = this.props;
+    let mainClass = 'altalogy-map';
+
+    if (showControlPanel) {
+      mainClass = mainClass + ' control-panel-active';
+    }
+
+    return React.createElement("div", {
+      className: mainClass,
+      style: {
+        width: '100%',
+        height: '50vh'
+      }
+    }, React.createElement(Map, {
       minZoom: "4",
       viewport: viewport,
       style: {
@@ -221,6 +272,11 @@ class AltaMap extends Component {
       ref: this.drawRef
     }), React.createElement(MapElements, {
       elements: elements
+    })), React.createElement(ControlPanel, {
+      enabled: controlPanel,
+      toggleControlPanel: () => this.toggleControlPanel(),
+      elements: elements,
+      altaRef: altaRef
     }));
   }
 
