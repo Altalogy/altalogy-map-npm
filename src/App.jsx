@@ -90,7 +90,9 @@ class App extends Component {
             ref={this.altaRef}
             updateAltaMapState={this.updateAltaMapState}
             controlPanel
-            />
+            searchBar
+            googleAPI='AIzaSyAUxgAhkrz0l0jK6_nlHtfbehXSwC6XhY4'
+          />
         </div>
         <AddData
           altaRef={this.altaRef}
