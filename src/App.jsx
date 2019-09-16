@@ -91,7 +91,7 @@ class App extends Component {
             updateAltaMapState={this.updateAltaMapState}
             controlPanel
             searchBar
-            googleAPI='AIzaSyAUxgAhkrz0l0jK6_nlHtfbehXSwC6XhY4'
+            googleAPI
           />
         </div>
         <AddData
