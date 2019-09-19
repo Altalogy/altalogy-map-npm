@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Map, TileLayer } from 'react-leaflet'
 import uuid from 'uuidv4'
+import AddressSearchBar from './components/AddressSearchBar'
 import MapElement from './models/MapElement'
 import MapElements from './components/MapElements'
 import MapLeafletDrawer from './components/MapLeafletDrawer'
@@ -216,7 +217,7 @@ class AltaMap extends Component {
       }
     }
     const { viewport, elements, showControlPanel } = this.state
-    const { controlPanel } = this.props
+    const { controlPanel, searchBar, searchBarPosition, googleAPI } = this.props
     let mainClass = 'altalogy-map'
     if (showControlPanel) { mainClass = mainClass + ' control-panel-active'}
     return (
@@ -232,12 +233,33 @@ class AltaMap extends Component {
             elements={elements}
           />
         </Map>
-        <ControlPanel
-          enabled={controlPanel}
-          toggleControlPanel={() => this.toggleControlPanel()}
-          elements={elements}
-          altaRef={altaRef}
-        />
+        { searchBar ? (
+          <ControlPanel
+            enabled={controlPanel}
+            toggleControlPanel={() => this.toggleControlPanel()}
+            elements={elements}
+            altaRef={altaRef}
+            searchBar={searchBar}
+            searchBarPosition={searchBarPosition}
+            googleAPI={googleAPI}
+          />
+        ) : (
+          <ControlPanel
+            enabled={controlPanel}
+            toggleControlPanel={() => this.toggleControlPanel()}
+            elements={elements}
+            altaRef={altaRef}
+          />
+        )}
+
+        { !searchBarPosition !== 'controlPanel' &&
+          <AddressSearchBar
+            enabled={searchBar}
+            elements={elements}
+            altaRef={altaRef}
+            googleAPI={googleAPI}
+          />
+        }
       </div>
     )
   }
