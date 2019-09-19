@@ -5,6 +5,7 @@ import DrawerControl from '../DrawerControl'
 import HideElements from '../HideElements'
 import DeleteData from '../DeleteData'
 import Modal from './components/Modal'
+import AddressSearchBar from '../AddressSearchBar'
 
 class ControlPanel extends React.Component {
   constructor(props) {
@@ -49,7 +50,7 @@ class ControlPanel extends React.Component {
   }
 
   render () {
-    const { enabled, elements, altaRef, } = this.props
+    const { enabled, elements, altaRef, searchBar,searchBarPosition, googleAPI } = this.props
     const { change, modal } = this.state
     if (!enabled) { return '' }
     return (
@@ -76,6 +77,14 @@ class ControlPanel extends React.Component {
         }
         { modal &&
           this.modalRender()
+        }
+        { searchBarPosition === 'controlPanel' &&
+          <AddressSearchBar
+            enabled={searchBar}
+            elements={elements}
+            altaRef={altaRef}
+            googleAPI={googleAPI}
+          />
         }
       </div>
     )
