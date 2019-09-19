@@ -27,6 +27,7 @@ class AltaMap extends Component {
       showControlPanel: false,
     }
 
+    this.callChangeCallback = this.callChangeCallback.bind(this)
     this.addElements = this.addElements.bind(this)
     this.setViewport = this.setViewport.bind(this)
     this.addMarker = this.addMarker.bind(this)
@@ -37,6 +38,12 @@ class AltaMap extends Component {
     this.getElementsByTag = this.getElementsByTag.bind(this)
     this.deleteElement = this.deleteElement.bind(this)
     this.deleteElementById = this.deleteElementById.bind(this)
+  }
+
+  callChangeCallback() {
+    if(this.props.onChange){
+      this.props.onChange()
+    }
   }
 
   setViewport(lat,lng,zoom) {
@@ -61,9 +68,7 @@ class AltaMap extends Component {
     this.setState({
       elements: elementsArray
     }, () => {
-      if(this.props.updateAltaMapState){
-        this.props.updateAltaMapState()
-      }
+      this.callChangeCallback()
     })
   }
 
@@ -82,9 +87,7 @@ class AltaMap extends Component {
     this.setState({
       elements: elementsArray
     }, () => {
-      if(this.props.updateAltaMapState){
-        this.props.updateAltaMapState()
-      }
+      this.callChangeCallback()
     })
   }
 
@@ -103,9 +106,7 @@ class AltaMap extends Component {
     this.setState({
       elements: elementsArray
     }, () => {
-      if(this.props.updateAltaMapState){
-        this.props.updateAltaMapState()
-      }
+      this.callChangeCallback()
     })
   }
 
@@ -121,9 +122,7 @@ class AltaMap extends Component {
       this.setState({
         elements: elementsArray
       }, () => {
-        if(this.props.updateAltaMapState){
-          this.props.updateAltaMapState()
-        }
+        this.callChangeCallback()
       })
     }
   }
@@ -140,9 +139,7 @@ class AltaMap extends Component {
       this.setState({
         elements: elementsArray
       }, () => {
-        if(this.props.updateAltaMapState){
-          this.props.updateAltaMapState()
-        }
+        this.callChangeCallback()
       })
     }
   }
