@@ -88,7 +88,7 @@ class App extends Component {
         <div style={{ width: '100%', height: '500px'}}>
           <AltaMap
             ref={this.altaRef}
-            updateAltaMapState={this.updateAltaMapState}
+            onChange={this.updateAltaMapState}
             controlPanel
             />
         </div>
