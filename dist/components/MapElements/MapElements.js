@@ -6,11 +6,11 @@ import MapMarker from '../MapMarker';
 class MapElements extends Component {
   getMapElements() {
     const {
-      elements
+      mapElements
     } = this.props;
 
-    if (elements.length > 0) {
-      return elements.map((mapObject, idx) => {
+    if (mapElements.getElements().length > 0) {
+      return mapElements.getElements().map((mapObject, idx) => {
         if (!mapObject.hidden) {
           if (mapObject.type === 'heatmap') {
             return React.createElement("div", {

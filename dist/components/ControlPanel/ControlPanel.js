@@ -1,10 +1,11 @@
 import React from 'react';
 import './ControlPanel.scss';
-import AddData from '../AddData';
+import AddData from './components/AddData';
 import DrawerControl from '../DrawerControl';
-import HideElements from '../HideElements';
-import DeleteData from '../DeleteData';
-import Modal from './components/Modal';
+import HideElements from './components/HideElements';
+import DeleteData from './components/DeleteData';
+import Modal from '../Modal';
+import AddressSearchBar from '../AddressSearchBar';
 
 class ControlPanel extends React.Component {
   constructor(props) {
@@ -40,16 +41,16 @@ class ControlPanel extends React.Component {
       modalContent
     } = this.state;
     const {
-      altaRef
+      handlers,
+      mapElements
     } = this.props;
-    const elements = altaRef.current.getElements();
 
     switch (modalContent) {
       case 'add':
         return React.createElement(Modal, {
           close: this.openModal,
           body: React.createElement(AddData, {
-            altaRef: altaRef
+            handlers: handlers
           })
         });
 
@@ -57,8 +58,8 @@ class ControlPanel extends React.Component {
         return React.createElement(Modal, {
           close: this.openModal,
           body: React.createElement(HideElements, {
-            altaRef: altaRef.current,
-            elements: elements
+            handlers: handlers,
+            mapElements: mapElements
           })
         });
 
@@ -66,8 +67,8 @@ class ControlPanel extends React.Component {
         return React.createElement(Modal, {
           close: this.openModal,
           body: React.createElement(DeleteData, {
-            altaRef: altaRef.current,
-            elements: elements
+            handlers: handlers,
+            mapElements: mapElements
           })
         });
 
@@ -78,16 +79,18 @@ class ControlPanel extends React.Component {
 
   render() {
     const {
-      enabled,
-      elements,
-      altaRef
+      controlPanel,
+      mapElements,
+      handlers,
+      searchAddress,
+      googleAPI
     } = this.props;
     const {
       change,
       modal
     } = this.state;
 
-    if (!enabled) {
+    if (!controlPanel || controlPanel.enabled === false) {
       return '';
     }
 
@@ -102,8 +105,8 @@ class ControlPanel extends React.Component {
       className: "bar2"
     }), React.createElement("div", {
       className: "bar3"
-    })), change && React.createElement("div", null, React.createElement("h1", null, "Control panel"), React.createElement("hr", null), React.createElement(DrawerControl, {
-      altaRef: altaRef
+    })), change && React.createElement("div", null, controlPanel && controlPanel.title ? React.createElement("h1", null, controlPanel.title) : React.createElement("h1", null, "Control panel"), React.createElement("hr", null), React.createElement(DrawerControl, {
+      handlers: handlers
     }), React.createElement("hr", null), React.createElement("div", {
       className: change ? 'elements__control' : 'elements__control hidden'
     }, React.createElement("button", {
@@ -112,7 +115,12 @@ class ControlPanel extends React.Component {
       onClick: () => this.openModal('hide')
     }, "Hide Element"), React.createElement("button", {
       onClick: () => this.openModal('del')
-    }, "Delete Element"))), modal && this.modalRender());
+    }, "Delete Element"))), modal && this.modalRender(), searchAddress && searchAddress.position === 'controlPanel' && React.createElement(AddressSearchBar, {
+      searchAddress: searchAddress,
+      mapElements: mapElements,
+      handlers: handlers,
+      googleAPI: googleAPI
+    }));
   }
 
 }

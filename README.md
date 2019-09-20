@@ -1,3 +1,5 @@
+[Demo](https://altalogy.github.io/altalogy-map-npm/)
+
 # Getting started
 
 #### 1) Install:
@@ -260,6 +262,7 @@ AltaMap
 #### MapElement
 
 **Fields:**
+
 | Field                   | Type                      | Description                                      |
 | ----------------------- | ------------------------- | ------------------------------------------------ |
 | id                      | UUIDv4                    | ID. If not set, random UUIDv4 is generated       |
@@ -270,6 +273,7 @@ AltaMap
 
 
 **Methods:**
+
 | Method                  | Params                    | Description                                      |
 | ----------------------- | ------------------------- | ------------------------------------------------ |
 | -      | - | -     |

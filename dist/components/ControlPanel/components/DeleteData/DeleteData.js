@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
+import PropTypes from 'prop-types';
 
 class DeleteData extends Component {
   constructor(props) {
@@ -12,57 +13,37 @@ class DeleteData extends Component {
     };
 
     this.state = {
-      selectedOption: null,
-      options: []
+      selectedOption: null
     };
+    this.confirmDeleteElement = this.confirmDeleteElement.bind(this);
   }
 
-  componentDidMount() {
-    if (this.props.elements) {
-      this.setDeleteOption(this.props.elements);
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.elements) {
-      this.setDeleteOption(nextProps.elements);
-    }
-  }
-
-  setDeleteOption(elements) {
+  setDeleteOption(mapElements) {
     let options = [];
-    elements.map(element => {
-      options.push({
-        value: element.id,
-        label: element.id
-      });
-      return options;
-    });
-    this.setState({
-      options: options
-    });
+    mapElements.getElements().map(el => options.push({
+      value: el.id,
+      label: `[${el.type}]: ${el.id}`
+    }));
+    return options;
   }
 
   confirmDeleteElement() {
     const {
-      selectedOption,
-      options
-    } = this.state;
-    this.props.altaRef.deleteElementById(selectedOption.value);
-    let newOptions = options;
-    let index = newOptions.indexOf(selectedOption.value);
-    newOptions.splice(index, 1);
+      handlers
+    } = this.props;
+    handlers.deleteElementById(this.state.selectedOption.value);
     this.setState({
-      selectedOption: null,
-      options: newOptions
+      selectedOption: null
     });
   }
 
   render() {
     const {
-      options,
       selectedOption
     } = this.state;
+    const {
+      mapElements
+    } = this.props;
     return React.createElement("div", {
       className: "delete__data"
     }, React.createElement("h2", null, "Delete Element"), React.createElement(Select, {
@@ -70,7 +51,7 @@ class DeleteData extends Component {
       classNamePrefix: "select",
       value: selectedOption,
       onChange: this.handleChange,
-      options: options
+      options: this.setDeleteOption(mapElements)
     }), selectedOption && selectedOption.value ? React.createElement("button", {
       className: "btn btn--primary",
       onClick: () => {
@@ -84,4 +65,8 @@ class DeleteData extends Component {
 
 }
 
+DeleteData.propTypes = {
+  handlers: PropTypes.object,
+  mapElements: PropTypes.object
+};
 export default DeleteData;

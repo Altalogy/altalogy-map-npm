@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/altalogy-map-npm/static/css/main.b158486e.chunk.css",
-    "main.js": "/altalogy-map-npm/static/js/main.1d9e90e2.chunk.js",
-    "main.js.map": "/altalogy-map-npm/static/js/main.1d9e90e2.chunk.js.map",
+    "main.css": "/altalogy-map-npm/static/css/main.03c16ca1.chunk.css",
+    "main.js": "/altalogy-map-npm/static/js/main.208c5c20.chunk.js",
+    "main.js.map": "/altalogy-map-npm/static/js/main.208c5c20.chunk.js.map",
     "runtime~main.js": "/altalogy-map-npm/static/js/runtime~main.b65077d6.js",
     "runtime~main.js.map": "/altalogy-map-npm/static/js/runtime~main.b65077d6.js.map",
-    "static/js/2.e37915d6.chunk.js": "/altalogy-map-npm/static/js/2.e37915d6.chunk.js",
-    "static/js/2.e37915d6.chunk.js.map": "/altalogy-map-npm/static/js/2.e37915d6.chunk.js.map",
+    "static/js/2.c744b3e3.chunk.js": "/altalogy-map-npm/static/js/2.c744b3e3.chunk.js",
+    "static/js/2.c744b3e3.chunk.js.map": "/altalogy-map-npm/static/js/2.c744b3e3.chunk.js.map",
     "index.html": "/altalogy-map-npm/index.html",
-    "precache-manifest.63049863615831fdb2b9696973a7065f.js": "/altalogy-map-npm/precache-manifest.63049863615831fdb2b9696973a7065f.js",
+    "precache-manifest.20b6639397e7c19c468d667ce97b21df.js": "/altalogy-map-npm/precache-manifest.20b6639397e7c19c468d667ce97b21df.js",
     "service-worker.js": "/altalogy-map-npm/service-worker.js",
-    "static/css/main.b158486e.chunk.css.map": "/altalogy-map-npm/static/css/main.b158486e.chunk.css.map"
+    "static/css/main.03c16ca1.chunk.css.map": "/altalogy-map-npm/static/css/main.03c16ca1.chunk.css.map"
   }
 }

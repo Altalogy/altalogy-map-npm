@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Map, TileLayer } from 'react-leaflet';
 import uuid from 'uuidv4';
-import MapElement from './models/MapElement';
-import MapElements from './components/MapElements';
+import AddressSearchBar from './components/AddressSearchBar';
+import MapElements from './models/MapElements';
+import MapElementsComponent from './components/MapElements';
 import MapLeafletDrawer from './components/MapLeafletDrawer';
 import MapDrawer from './components/MapDrawer';
 import ControlPanel from './components/ControlPanel';
@@ -18,21 +19,24 @@ class AltaMap extends Component {
     this.drawRef = React.createRef();
     this.leafletDrawer = React.createRef();
     this.state = {
-      elements: [],
+      mapElements: new MapElements([]),
       viewport: DEFAULT_VIEWPORT,
       showControlPanel: false
     };
-    this.addElements = this.addElements.bind(this);
+    this.callChangeCallback = this.callChangeCallback.bind(this);
+    /***   HANDLERS BINDS    ***/
+
     this.setViewport = this.setViewport.bind(this);
-    this.addMarker = this.addMarker.bind(this);
-    this.getElements = this.getElements.bind(this);
-    this.hideElement = this.hideElement.bind(this);
+    this.addElements = this.addElements.bind(this);
+    this.hideElements = this.hideElements.bind(this);
     this.hideElementById = this.hideElementById.bind(this);
-    this.getElementsById = this.getElementsById.bind(this);
-    this.getElementsByTag = this.getElementsByTag.bind(this);
     this.deleteElement = this.deleteElement.bind(this);
     this.deleteElementById = this.deleteElementById.bind(this);
+    this.addMarker = this.addMarker.bind(this);
+    /*** END: HANDLERS BINDS ***/
   }
+  /*****************  HANDLERS   *********************/
+
 
   setViewport(lat, lng, zoom) {
     if (lat && lng && zoom) {
@@ -45,149 +49,66 @@ class AltaMap extends Component {
     }
   }
 
+  getElements() {
+    return this.state.mapElements.getElements();
+  }
+
+  getElementsById(id) {
+    return this.state.mapElements.getElementsById(id);
+  }
+
+  getElementsByTag(tag) {
+    return this.state.mapElements.getElementsByTag(tag);
+  }
+
   addElements(elements) {
-    let mapElement;
-    let elementsArray = this.state.elements;
-    elements.map(me => {
-      mapElement = new MapElement(me);
-      elementsArray = elementsArray.concat(mapElement);
-      return elementsArray;
-    });
+    let mapElements = this.state.mapElements;
+    mapElements.addElements(elements);
     this.setState({
-      elements: elementsArray
+      mapElements: mapElements
     }, () => {
-      if (this.props.updateAltaMapState) {
-        this.props.updateAltaMapState();
-      }
+      this.callChangeCallback();
     });
   }
 
   deleteElement(tag) {
-    let deleteItem;
-    let elementsArray = this.state.elements;
-
-    if (elementsArray.length > 0) {
-      elementsArray.map(elements => {
-        if (elements.tags && elements.tags.indexOf(tag) > -1) {
-          deleteItem = elementsArray.indexOf(elements);
-          elementsArray.splice(deleteItem, 1);
-        }
-
-        return elementsArray;
-      });
-    }
-
+    let mapElements = this.state.mapElements;
+    mapElements.deleteElement(tag);
     this.setState({
-      elements: elementsArray
+      mapElements: mapElements
     }, () => {
-      if (this.props.updateAltaMapState) {
-        this.props.updateAltaMapState();
-      }
+      this.callChangeCallback();
     });
   }
 
   deleteElementById(id) {
-    let deleteItem;
-    let elementsArray = this.state.elements;
-
-    if (elementsArray.length > 0) {
-      elementsArray.map(elements => {
-        if (elements.id === id) {
-          deleteItem = elementsArray.indexOf(elements);
-          elementsArray.splice(deleteItem, 1);
-        }
-
-        return elementsArray;
-      });
-    }
-
+    let mapElements = this.state.mapElements;
+    mapElements.deleteElementById(id);
     this.setState({
-      elements: elementsArray
+      mapElements: mapElements
     }, () => {
-      if (this.props.updateAltaMapState) {
-        this.props.updateAltaMapState();
-      }
+      this.callChangeCallback();
     });
   }
 
-  hideElement(tag) {
-    let elementsArray = this.state.elements;
-
-    if (elementsArray.length > 0) {
-      elementsArray.map(elements => {
-        if (elements.tags && elements.tags.indexOf(tag) > -1) {
-          elements.hidden = elements.hidden ? false : true;
-        }
-
-        return elementsArray;
-      });
-      this.setState({
-        elements: elementsArray
-      }, () => {
-        if (this.props.updateAltaMapState) {
-          this.props.updateAltaMapState();
-        }
-      });
-    }
+  hideElements(tag) {
+    let mapElements = this.state.mapElements;
+    mapElements.hideElements(tag);
+    this.setState({
+      mapElements: mapElements
+    }, () => {
+      this.callChangeCallback();
+    });
   }
 
   hideElementById(id) {
-    let elementsArray = this.state.elements;
-
-    if (elementsArray.length > 0) {
-      elementsArray.map(elements => {
-        if (elements.id === id) {
-          elements.hidden = elements.hidden ? false : true;
-        }
-
-        return elementsArray;
-      });
-      this.setState({
-        elements: elementsArray
-      }, () => {
-        if (this.props.updateAltaMapState) {
-          this.props.updateAltaMapState();
-        }
-      });
-    }
-  }
-
-  getElements() {
-    return this.state.elements;
-  }
-
-  getElementsById(id) {
-    let element;
-    let elementsArray = this.state.elements;
-
-    if (elementsArray.length > 0) {
-      elementsArray.map(elements => {
-        if (elements.id === id) {
-          element = elements;
-        }
-
-        return element;
-      });
-    }
-
-    return element;
-  }
-
-  getElementsByTag(tag) {
-    let element;
-    let elementsArray = this.state.elements;
-
-    if (elementsArray.length > 0) {
-      elementsArray.map(elements => {
-        if (elements.tags && elements.tags.indexOf(tag) > -1) {
-          element = elements;
-        }
-
-        return element;
-      });
-    }
-
-    return element;
+    let mapElements = this.state.mapElements;
+    mapElements.hideElementById(id);
+    this.setState({
+      mapElements: mapElements
+    }, () => {
+      this.callChangeCallback();
+    });
   }
 
   addMarker(lat, lng, popup) {
@@ -207,6 +128,14 @@ class AltaMap extends Component {
       this.addElements(marker);
     }
   }
+  /* =================  END HANDLERS ===================== */
+
+
+  callChangeCallback() {
+    if (this.props.onChange) {
+      this.props.onChange();
+    }
+  }
 
   toggleControlPanel() {
     const {
@@ -218,31 +147,29 @@ class AltaMap extends Component {
   }
 
   render() {
-    const altaRef = {
-      current: {
-        addElements: this.addElements,
-        addMarker: this.addMarker,
-        drawRef: this.drawRef,
-        getElements: this.getElements,
-        state: this.state,
-        leafletDrawer: this.leafletDrawer,
-        setViewport: this.setViewport,
-        props: this.props,
-        hideElement: this.hideElement,
-        hideElementById: this.hideElementById,
-        getElementsById: this.getElementsById,
-        getElementsByTag: this.getElementsByTag,
-        deleteElement: this.deleteElement,
-        deleteElementById: this.deleteElementById
-      }
+    const handlers = {
+      setViewport: this.setViewport,
+      getElementsById: this.getElementsById,
+      getElementsByTag: this.getElementsByTag,
+      addElements: this.addElements,
+      hideElements: this.hideElements,
+      hideElementById: this.hideElementById,
+      deleteElement: this.deleteElement,
+      deleteElementById: this.deleteElementById,
+      addMarker: this.addMarker,
+      drawRef: this.drawRef,
+      leafletDrawer: this.leafletDrawer,
+      props: this.props
     };
     const {
       viewport,
-      elements,
+      mapElements,
       showControlPanel
     } = this.state;
     const {
-      controlPanel
+      controlPanel,
+      searchAddress,
+      googleAPI
     } = this.props;
     let mainClass = 'altalogy-map';
 
@@ -254,7 +181,7 @@ class AltaMap extends Component {
       className: mainClass,
       style: {
         width: '100%',
-        height: '50vh'
+        height: '100%'
       }
     }, React.createElement(Map, {
       minZoom: "4",
@@ -270,13 +197,20 @@ class AltaMap extends Component {
       ref: this.leafletDrawer
     }), React.createElement(MapDrawer, {
       ref: this.drawRef
-    }), React.createElement(MapElements, {
-      elements: elements
+    }), React.createElement(MapElementsComponent, {
+      mapElements: mapElements
     })), React.createElement(ControlPanel, {
-      enabled: controlPanel,
+      controlPanel: controlPanel,
       toggleControlPanel: () => this.toggleControlPanel(),
-      elements: elements,
-      altaRef: altaRef
+      mapElements: mapElements,
+      handlers: handlers,
+      searchAddress: searchAddress,
+      googleAPI: googleAPI
+    }), searchAddress && searchAddress.enabled !== false && searchAddress.position !== 'controlPanel' && React.createElement(AddressSearchBar, {
+      searchAddress: searchAddress,
+      mapElements: mapElements,
+      handlers: handlers,
+      googleAPI: googleAPI
     }));
   }
 
