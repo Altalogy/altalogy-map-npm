@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
+import PropTypes from 'prop-types'
 
 class HideElements extends Component {
   constructor(props) {
@@ -7,20 +8,7 @@ class HideElements extends Component {
 
     this.state = {
       selectedOption: null,
-      hide: false,
-      options: []
-    }
-  }
-
-  componentDidMount() {
-    if(this.props.elements){
-      this.setHideOption(this.props.elements)
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.elements){
-      this.setHideOption(nextProps.elements)
+      hide: false
     }
   }
 
@@ -28,26 +16,23 @@ class HideElements extends Component {
     this.setState({ selectedOption })
   }
 
-  setHideOption(elements) {
+  setHideOption(mapElements) {
     let options = []
-    elements.map((element) => {
-      options.push({ value: element.id, label: element.id })
-      return options
-    })
-    this.setState({
-      options: options
-    })
+    mapElements.getElements().map((el) => options.push({ value: el.id, label: `[${el.type}]: ${el.id}` }))
+    return options
   }
 
   confirmHideElement() {
-    this.props.altaRef.hideElementById(this.state.selectedOption.value)
+    const { handlers } = this.props
+    handlers.hideElementById(this.state.selectedOption.value)
     this.setState({
       hide: !this.state.hide
     })
   }
 
   render() {
-    const { selectedOption, options } = this.state
+    const { selectedOption } = this.state
+    const { mapElements } = this.props
     return (
       <div className='hide__elements'>
         <h2>Hide Element</h2>
@@ -56,7 +41,7 @@ class HideElements extends Component {
           classNamePrefix='select'
           value={selectedOption}
           onChange={this.handleChange}
-          options={options}
+          options={this.setHideOption(mapElements)}
         />
         { selectedOption && selectedOption.value ?
           <button  className='btn btn--primary' onClick={() => {this.confirmHideElement()}}>Submit</button> :
@@ -65,6 +50,11 @@ class HideElements extends Component {
       </div>
     )
   }
+}
+
+HideElements.propTypes = {
+  handlers: PropTypes.object,
+  mapElements: PropTypes.object,
 }
 
 export default HideElements

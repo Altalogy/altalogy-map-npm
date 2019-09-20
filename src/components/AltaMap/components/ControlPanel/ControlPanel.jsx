@@ -1,10 +1,10 @@
 import React from 'react'
 import './ControlPanel.scss'
-import AddData from '../AddData'
+import AddData from './components/AddData'
 import DrawerControl from '../DrawerControl'
-import HideElements from '../HideElements'
-import DeleteData from '../DeleteData'
-import Modal from './components/Modal'
+import HideElements from './components/HideElements'
+import DeleteData from './components/DeleteData'
+import Modal from '../Modal'
 import AddressSearchBar from '../AddressSearchBar'
 
 class ControlPanel extends React.Component {
@@ -35,24 +35,23 @@ class ControlPanel extends React.Component {
 
   modalRender() {
     const { modalContent } = this.state
-    const { altaRef } = this.props
-    const elements = altaRef.current.getElements()
+    const { handlers, mapElements } = this.props
     switch(modalContent) {
       case 'add':
-        return <Modal close={this.openModal} body={<AddData altaRef={altaRef} />} />;
+        return <Modal close={this.openModal} body={<AddData handlers={handlers} />} />;
       case 'hide':
-        return <Modal close={this.openModal} body={<HideElements altaRef={altaRef.current} elements={elements} />} />;
+        return <Modal close={this.openModal} body={<HideElements handlers={handlers} mapElements={mapElements} />} />;
       case 'del':
-        return <Modal close={this.openModal} body={<DeleteData altaRef={altaRef.current} elements={elements} />} />;
+        return <Modal close={this.openModal} body={<DeleteData handlers={handlers} mapElements={mapElements} />} />;
       default:
         return <div></div>
     }
   }
 
   render () {
-    const { enabled, elements, altaRef, searchBar,searchBarPosition, googleAPI } = this.props
+    const { controlPanel, mapElements, handlers, searchAddress, googleAPI } = this.props
     const { change, modal } = this.state
-    if (!enabled) { return '' }
+    if (!controlPanel || controlPanel.enabled === false) { return '' }
     return (
       <div className='control-panel'>
         <button className={(change ? `control-panel__open_btn change` : 'control-panel__open_btn')} onClick={this.controlPanel}>
@@ -62,10 +61,13 @@ class ControlPanel extends React.Component {
         </button>
         { change &&
           <div>
-            <h1>Control panel</h1>
+            { controlPanel && controlPanel.title
+              ? <h1>{controlPanel.title}</h1>
+              : <h1>Control panel</h1>
+            }
             <hr></hr>
             <DrawerControl
-              altaRef={altaRef}
+              handlers={handlers}
             />
             <hr></hr>
             <div className={(change ? 'elements__control' : 'elements__control hidden')}>
@@ -78,11 +80,11 @@ class ControlPanel extends React.Component {
         { modal &&
           this.modalRender()
         }
-        { searchBarPosition === 'controlPanel' &&
+        { searchAddress && searchAddress.position === 'controlPanel' &&
           <AddressSearchBar
-            enabled={searchBar}
-            elements={elements}
-            altaRef={altaRef}
+            searchAddress={searchAddress}
+            mapElements={mapElements}
+            handlers={handlers}
             googleAPI={googleAPI}
           />
         }

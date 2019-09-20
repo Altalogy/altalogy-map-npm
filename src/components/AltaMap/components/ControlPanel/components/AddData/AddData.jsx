@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
+import PropTypes from 'prop-types'
 
 const ADDRESS_POINTS = [
   [-37.8839, 175.3657417333, "571"],
@@ -138,13 +139,14 @@ class AddData extends Component {
 
   confirmAddData() {
     const { selectedOption, heatmap, marker, groupMarkers, } = this.state
+    const { handlers } = this.props
     if(selectedOption.value === 'heatmap') {
       let data = [{
         type: 'heatmap',
         data: heatmap
       }]
       if(heatmap) {
-        this.props.altaRef.current.addElements(data)
+        handlers.addElements(data)
       }
     } else if(selectedOption.value === 'group_markers') {
       let data = [{
@@ -152,11 +154,11 @@ class AddData extends Component {
         data: groupMarkers
       }]
       if(groupMarkers) {
-        this.props.altaRef.current.addElements(data)
+        handlers.addElements(data)
       }
     } else if(selectedOption.value === 'marker') {
       if(marker.lat && marker.lng) {
-        this.props.altaRef.current.addMarker(marker.lat,marker.lng,marker.popup)
+        handlers.addMarker(marker.lat,marker.lng,marker.popup)
       }
     }
   }
@@ -183,6 +185,10 @@ class AddData extends Component {
       </div>
     )
   }
+}
+
+AddData.propTypes = {
+  handlers: PropTypes.object,
 }
 
 export default AddData

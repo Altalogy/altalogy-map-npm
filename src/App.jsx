@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 import './App.scss'
 import AltaMap from './components/AltaMap'
-import AddData from './components/AltaMap/components/AddData'
-import DrawerControl from './components/AltaMap/components/DrawerControl'
-import HideElements from './components/AltaMap/components/HideElements'
-import DeleteData from './components/AltaMap/components/DeleteData'
 
 // const ADDRESS_POINTS = [
 //   [-37.8839, null, "571"],
@@ -54,21 +50,7 @@ class App extends Component {
         didMount: !this.state.didMount
       })
     }
-    this.altaRef.current.addMarker('51.270908', '20.039993','KdsaddasATOWICE NOCĄ BO MOCĄ ')
-  }
-  getDeleteAndHideComponent() {
-    return (
-      <div>
-        <DeleteData
-          altaRef={this.altaRef.current}
-          elements={this.state.elements}
-          />
-        <HideElements
-          altaRef={this.altaRef.current}
-          elements={this.state.elements}
-          />
-      </div>
-    )
+    this.altaRef.current.addMarker('50.270908', '19.039993','Katowice')
   }
 
   updateAltaMapState() {
@@ -81,25 +63,21 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1>AltaMap</h1>
-        <DrawerControl
-          altaRef={this.altaRef}
-        />
-        <div style={{ width: '100%', height: '500px'}}>
+        <div style={{ width: '100%', height: '100vh'}}>
           <AltaMap
             ref={this.altaRef}
             onChange={this.updateAltaMapState}
-            controlPanel
-            searchBar
-            googleAPI
+            controlPanel={{
+              enabled: true,
+              title: 'AltaMap',
+            }}
+            searchAddress={{
+              enabled: true,
+              position: 'top',
+            }}
+            googleAPI='PUT_KEY_HERE'
           />
         </div>
-        <AddData
-          altaRef={this.altaRef}
-        />
-        { this.state.didMount &&
-          this.getDeleteAndHideComponent()
-        }
       </div>
     )
   }

@@ -39,7 +39,7 @@ class MyComponent extends Component {
 
 The `AltaMap` stores own internal state and contains functions to manipulate this state. To get its state or to use its functions (let's call it library's API), you need to use `ref`. In above code it is shown how to initialize `ref` in constructor and assign it to `<AltaMap ref={} />`.
 
-To sync application's state, Redux store etc., you can use `onChange` to get its current state.
+To sync application's state, Redux store etc., you can use `onChange` to get AltaMap current state.
 
 Check **Options** section to see advanced configuration.
 
@@ -48,10 +48,100 @@ Check **Options** section to see advanced configuration.
 
 ##### A) Properties
 
+```
+<AltaMap
+  ref={this.altaRef}
+  onChange={this.updateState}
+  controlPanel={{
+    enabled: true,
+    title: 'AltaMap',
+  }}
+  searchAddress={{
+    enabled: true,
+    position: 'top',
+  }}
+  googleAPI='PUT_KEY_HERE'
+/>
+```
+
 | Property                | Values                    | Description                                      |
 | ----------------------- | ------------------------- | ------------------------------------------------ |
-| controlPanel            | [Boolean] true / false    | Display the control Panel on the Map             |
+| controlPanel            | [Map]                     | Display the control Panel on the Map             |
 | onChange                | [Function]                | Callback triggered on AltaMap state change       |
+| controlPanel                | [Map]                | Enables and customizes the control panel       |
+| searchAddress                | [Map]                | Enables and customizes the Google autocomplete search address input       |
+| googleAPI                | [String]                | Google API Key       |
+
+
+##### `ref`
+
+React reference. Create it in constructor and assign to component.
+```
+constructor(props) {
+  super(props)
+  this.altaRef = React.createRef()
+}
+
+<AltaMap
+  ref={this.altaRef} />
+```
+
+Then, you access the `AltaMap` state and API:
+```
+this.altaRef.current.addMarker('50.270908', '19.039993','Some label')
+```
+
+##### `onChange`
+
+Function triggered every time that `AltaMap` state being changed.
+
+```
+updateState() {
+  let elements = this.altaRef.current.getElements()
+  this.setState({
+    elements: elements
+  })
+}
+
+<AltaMap
+  ref={this.altaRef}
+  onChange={this.updateState}
+/>
+```
+
+##### `controlPanel`
+
+```
+<AltaMap
+  controlPanel={{
+    enabled: true,
+    title: 'AltaMap',
+  }}
+/>
+```
+
+##### `searchAddress`
+
+Input with address autocomplete.
+
+```
+<AltaMap
+  searchAddress={{
+    enabled: true,  // skip or set to false if you don't want to display searchAddress
+    position: 'top', // set position.
+  }}
+  googleAPI='PUT_GOOGLE_API_KEY_HERE'
+/>
+```
+
+* *enabled* - [Boolean]
+* *controlPanel* - [String] displays address search input in the control panel
+
+##### `googleAPI`
+
+Add Google API key if you use Address Search or Google map layers.
+
+
 
 
 ##### B) Ref API
@@ -71,9 +161,9 @@ constructor(props) {
 doSomething() {
   # Examples:
   # 1. change viewport:
-  this.altaRef.setViewport()
+  this.altaRef.current.setViewport()
   # 2. add element:
-  this.altaRef.addElements([{...}])
+  this.altaRef.current.addElements([{...}])
 }
 
 (...)
@@ -88,7 +178,8 @@ doSomething() {
 | API                     | Params                    | Description                                      |
 | ----------------------- | ------------------------- | ------------------------------------------------ |
 | setViewport(lat,lng,zoom)| lat,lng,zoom             | Set mapCenter and zoom                           |
-| addMapElements(elements)| elements - JSON           | Add elements to the map                          |
+| addElements(elements)   | elements - JSON           | Add elements to the map                          |
+| deleteElements(tags)    | array of strings          | Delete elements with specific tags               |
 
 ---
 
@@ -164,6 +255,48 @@ AltaMap
   |- AltaMap.jsx    # 4.5. Entrypoint for the library. Displays map, MapElements and other components
 ```
 
+### Models
+
+#### MapElement
+
+**Fields:**
+| Field                   | Type                      | Description                                      |
+| ----------------------- | ------------------------- | ------------------------------------------------ |
+| id                      | UUIDv4                    | ID. If not set, random UUIDv4 is generated       |
+| type                    | string                    | Type of the MapElement, e.g. Marker, Heatmap     |
+| tags                    | array of strings          | Tags help to group MapElements so then we can delete group of elements with the same tags  |
+| options                 | map                       | contains options specific for the type, for example: icon of the marker |
+| data                    | map                       | contains data specific for the type, e.g. Marker may contain: lat, lng |
+
+
+**Methods:**
+| Method                  | Params                    | Description                                      |
+| ----------------------- | ------------------------- | ------------------------------------------------ |
+| -      | - | -     |
+
+
+#### MapElements
+
+**Fields:**
+| Field                   | Type                      | Description                                      |
+| ----------------------- | ------------------------- | ------------------------------------------------ |
+| elements                | array []                  | List of mapElements                              |
+
+**Methods:**
+| Method                  | Params                    | Description                                      |
+| ----------------------- | ------------------------- | ------------------------------------------------ |
+| getElements()           |                            | Returns all mapElements                         |
+| getElementsById(id)        | string - tag              | Returns all mapElements with specific id       |
+| getElementsByTag(tag)        | string - id              | Returns all mapElements with specific tags       |
+| addElements(elements)   | elements - JSON           | Add elements to the map                          |
+| deleteElement(tag)     | string - tag              | Delete element with specific tags               |
+| deleteElementById(id)     | string - id              | Delete element with specific id               |
+| hideElements(tag)     | string - tag              | Toggle element with specific tags               |
+| hideElementById(id)     | string - id              | Toggle element with specific id               |
+
+
+
+
 ### Architecture
 
 Project contains:
@@ -183,17 +316,51 @@ The property `onChange` can be used as callback to any event changing the AltaMa
 Every element displayed on the map, like markers and shapes, should be an object of class extending **MapElement** model or just a **MapElement**.
 All of these elements (**MapElement**) are grouped in a collection **MapElements**.
 
-**MapElements API**
 
-* `add` - adds **MapElement** object or object of the class extending **MapElement** to the collection
-* `delete(tags)`
-* `deleteById(id)`
-* `hide(tags)`
-* `hideById`
-* `getAll`
-* `get(tags)`
-* `getById(id)`
+#### Handlers
 
+The `AltaMap.jsx` contains the section **Handlers** and then `const handlers = { ... }` in the render.
+
+```
+constructor(props) {
+  super(props)
+
+  (...)
+
+  /***   HANDLERS BINDS    ***/
+  // >>> HERE BIND HANDLERS
+
+  this.setViewport = this.setViewport.bind(this)
+  this.addElements = this.addElements.bind(this)
+  this.addMarker   = this.addMarker.bind(this)
+
+  /*** END: HANDLERS BINDS ***/
+}
+
+/*****************  HANDLERS   *********************/
+// >>> HERE PUT HANDLERS
+
+setViewport(lat,lng,zoom) { ... }
+addElements(elements) { ... }
+addMarker(lat,lng,popup) { ... }
+
+/* =================  END HANDLERS ===================== */
+
+render() {
+  const handlers = {
+    // >>> HERE ADD HANDLERS TO VARIABLE PASSED TO CHILDREN
+    addElements: this.addElements,
+    (...)
+  }
+(...)
+}
+```
+
+Handlers are just a functions doing mostly two things:
+* running model's function, e.g. `mapElements.addElements()`,
+* using `setState` to change AltaMap state and force re-render.
+
+It's important to use handlers to get the re-render effect.
 
 
 #### onChange
@@ -317,22 +484,22 @@ Changelog:
 
 #### New features
 
-General approach is to:
+The general approach:
 1. create a model(s). It should extend `MapElement` class if it is an element displayed right on the map.
-2. create new component in `src/components/AltaMap/components`
-3. import component in `AltaMap.jsx`
+2. add to model methods
+3. if needed, add in `AltaMap.jsx` handlers to the model methods (only to setters). Using model methods through `AltaMap.jsx` handlers is important when we want force re-render, because in handler we can do two things:
+  1. run model's method: `const myModelTemp = this.state.myModel.method1()`
+  2. refresh state: `this.setState({ myModel: myModelTemp })`
+  [More about handlers](#handlers) - here you find alos instructions to bind handler and add to `handlers` variable in the render function.
 
-Below is more detailed instructions how to develop specific type of components.
+4. create new component in `src/components/AltaMap/components` and its sub-components
+3. import and use component in `AltaMap.jsx` or in any other proper component
 
 Remember to add comments to the models and components which describes:
-* input
-* what it does
-* API
+* what is the expected input with **PropTypes**
+* what it does - comment at the beginning of the file
 
 Remember about README.md. Update **Options** section with props and/or other sections if is it related.
-
-
-
 
 ---
 

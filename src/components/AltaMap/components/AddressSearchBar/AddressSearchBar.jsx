@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Geosuggest from 'react-geosuggest'
 import './AddressSearchBar.scss'
 
@@ -14,9 +13,10 @@ class AddressSearchBar extends React.Component {
     this.checkScript = this.checkScript.bind(this)
     this.onSuggestSelect = this.onSuggestSelect.bind(this)
   }
-  componentWillMount () {
-    const { googleAPI, enabled } = this.props
-    if(googleAPI && enabled ) {
+
+  componentDidMount() {
+    const { googleAPI, searchAddress } = this.props
+    if(googleAPI && searchAddress && searchAddress.enabled !== false ) {
       const script = document.createElement("script");
 
       script.src = `https://maps.googleapis.com/maps/api/js?key=${googleAPI}&libraries=places`;
@@ -24,9 +24,7 @@ class AddressSearchBar extends React.Component {
 
       document.body.appendChild(script);
     }
-  }
 
-  componentDidMount() {
     interval = setInterval(this.checkScript, 1000)
   }
 
@@ -46,8 +44,8 @@ class AddressSearchBar extends React.Component {
   }
 
   render () {
-    const { enabled } = this.props
-    if (!enabled  || !window.google) { return '' }
+    const { searchAddress } = this.props
+    if (!searchAddress || searchAddress.enabled === false  || !window.google) { return '' }
     return (
       <div className='search__bar'>
         { this.state.script &&
