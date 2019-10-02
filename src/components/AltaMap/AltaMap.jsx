@@ -7,6 +7,7 @@ import MapElementsComponent from './components/MapElements'
 import MapLeafletDrawer from './components/MapLeafletDrawer'
 import MapDrawer from './components/MapDrawer'
 import ControlPanel from './components/ControlPanel'
+import ContextMenu from 'react-context-menu'
 import './AltaMap.scss'
 
 const DEFAULT_VIEWPORT = {
@@ -17,7 +18,7 @@ const DEFAULT_VIEWPORT = {
 class AltaMap extends Component {
   constructor(props) {
     super(props)
-
+    this.controlRef = React.createRef()
     this.drawRef = React.createRef()
     this.leafletDrawer = React.createRef()
     this.state = {
@@ -147,25 +148,29 @@ class AltaMap extends Component {
 
       addMarker: this.addMarker,
 
+      controlRef: this.controlRef,
+
       drawRef: this.drawRef,
       leafletDrawer: this.leafletDrawer,
 
       props: this.props,
     }
+
     const { viewport, mapElements, showControlPanel } = this.state
     const { controlPanel, searchAddress, googleAPI } = this.props
     let mainClass = 'altalogy-map'
     if (showControlPanel) { mainClass = mainClass + ' control-panel-active'}
     return (
       <div className={mainClass} style={{ width:'100%', height: '100%' }}>
-        <Map minZoom='4' viewport={viewport} style={{ width:'100%', height: '100%' }}>
+        <Map minZoom='4' viewport={viewport} style={{ width:'100%', height: '100%' }} id='alta-map'>
           <TileLayer
             url={this.props.tileLayer ? this.props.tileLayer : 'http://{s}.tile.osm.org/{z}/{x}/{y}.png'}
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           />
           <MapLeafletDrawer ref={this.leafletDrawer} />
-          <MapDrawer ref={this.drawRef} />
+          <MapDrawer ref={this.drawRef} addElements={this.addElements} mapElements={mapElements.elements} />
           <MapElementsComponent
+            ref={this.controlRef}
             mapElements={mapElements}
           />
         </Map>

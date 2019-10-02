@@ -8,8 +8,8 @@ const DrawerControl = (props) => {
       <button onClick={() => props.handlers.drawRef.current.setMapDrawer('polygon')}>Draw Polygon</button>
       <button onClick={() => props.handlers.drawRef.current.setMapDrawer('rectangle')}>Draw Rectangle</button>
       <button onClick={() => props.handlers.drawRef.current.setMapDrawer('circle')}>Draw Circle</button>
-      <button onClick={() => props.handlers.drawRef.current.editMapDrawer()}>Edit</button>
-      <button onClick={() => props.handlers.drawRef.current.removeMapDrawer()}>Remove</button>
+      <button onClick={() => props.handlers.controlRef.current.editControl()}>Edit</button>
+      <button onClick={() => props.handlers.controlRef.current.removeControl()}>Remove</button>
     </div>
   )
 }

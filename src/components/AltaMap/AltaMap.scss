@@ -4,6 +4,10 @@
   text-align: center;
 }
 
+#contextMenu {
+  z-index: 999;
+}
+
 .altalogy-map {
   width: 100vw;
   min-height: 50vh;

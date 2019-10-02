@@ -29,8 +29,6 @@ class MapDrawer extends React.Component {
     this.setMapDrawer = this.setMapDrawer.bind(this)
     this.setMapDrawerSettings = this.setMapDrawerSettings.bind(this)
     this.mapDrawer = this.mapDrawer.bind(this)
-    this.editMapDrawer = this.editMapDrawer.bind(this)
-    this.removeMapDrawer = this.removeMapDrawer.bind(this)
     this.getMapDrawerData = this.getMapDrawerData.bind(this)
     this.cancelMapDrawer = this.cancelMapDrawer.bind(this)
   }
@@ -39,9 +37,60 @@ class MapDrawer extends React.Component {
     window.react_map._mapDrawerRef = x
   }
 
-  getMapDrawerData() {
+  onDrawStop() {
+    let exist = false
+    let element
+    const { mapElements } = this.props
+    const data = window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers
+    Object.keys(data).map((x) => {
+      window.react_map._mapDrawerRef.leafletElement._map.removeLayer(data[x])
+    })
     this.setState({
-      mapDrawerData: window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers
+      mapDrawerData: data
+    }, () => {
+      Object.keys(data).map((x) => {
+        mapElements.map((el) => {
+          if(el.id === x){ return exist = true }
+          return ''
+        })
+        if(!exist) {
+          if(_.hasIn(data[x], '_mRadius')){
+            element = [{
+              id: x,
+              type: 'circle',
+              tags: null,
+              options: {},
+              data: {lat: data[x]._latlng.lat, lng: data[x]._latlng.lng, radius: data[x]._mRadius },
+            }]
+          } else if(data[x]._latlngs.length > 1) {
+            element = [{
+              id: x,
+              type: 'polyline',
+              tags: null,
+              options: {},
+              data: {latLng: data[x]._latlngs},
+            }]
+          } else {
+            element = [{
+              id: x,
+              type: 'polygon',
+              tags: null,
+              options: {},
+              data: {latLng: data[x]._latlngs},
+            }]
+          }
+          this.props.addElements(element)
+        }
+        exist = false
+        return ''
+      })
+    })
+  }
+
+  getMapDrawerData() {
+    const data = window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers
+    this.setState({
+      mapDrawerData: data
     }, () => {
       return (
         this.state.mapDrawerData
@@ -83,44 +132,17 @@ class MapDrawer extends React.Component {
     }
   }
 
-  editMapDrawer() {
-    if(window.react_map && window.react_map._mapDrawerRef && this.state.editable === false) {
-      this.setState({
-        editable: true
-      })
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.edit.handler.enable()
-    } else {
-      this.setState({
-        editable: false
-      })
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.edit.handler.disable()
-    }
-  }
-
-  removeMapDrawer() {
-    if(window.react_map && window.react_map._mapDrawerRef && this.state.removable === false) {
-      this.setState({
-        removable: true
-      })
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.remove.handler.enable()
-    } else {
-      this.setState({
-        removable: false
-      })
-      window.react_map._mapDrawerRef.leafletElement._toolbars.edit._modes.remove.handler.disable()
-    }
-  }
-
   render () {
     const {mapDrawerSettings, mapDrawer} = this
     return (
       <div className='custom__map'>
         <FeatureGroup>
           <EditControl
+            onDrawStop={() => this.onDrawStop()}
             position='topleft'
             ref={el => mapDrawer(el)}
             draw={mapDrawerSettings}
-            />
+          />
         </FeatureGroup>
       </div>
     )

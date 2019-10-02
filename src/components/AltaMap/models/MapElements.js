@@ -51,12 +51,16 @@ export default class MapElements {
 
   deleteElement(tag) {
     let deleteItem
+    let element
     let elementsArray = this.elements
     if(elementsArray.length > 0) {
       elementsArray.map((el) => {
         if(el.tags && el.tags.indexOf(tag) > -1) {
+          element = window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers[el.id]
           deleteItem = elementsArray.indexOf(el)
           elementsArray.splice(deleteItem,1)
+          window.react_map._mapDrawerRef.leafletElement._map.removeLayer(element)
+          window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup.removeLayer(element)
         }
         return elementsArray
       })
@@ -67,11 +71,15 @@ export default class MapElements {
   deleteElementById(id) {
     let deleteItem
     let elementsArray = this.elements
+    let element
     if(elementsArray.length > 0) {
       elementsArray.map((el) => {
         if(el.id === id) {
+          element = window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup._layers[el.id]
           deleteItem = elementsArray.indexOf(el)
           elementsArray.splice(deleteItem,1)
+          window.react_map._mapDrawerRef.leafletElement._map.removeLayer(element)
+          window.react_map._mapDrawerRef.leafletElement.options.edit.featureGroup.removeLayer(element)
         }
         return elementsArray
       })
